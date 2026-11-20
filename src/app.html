@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travel Carbon Control Tower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAFAFD;--card:#FFFFFF;--border:#D3D3DC;--border-2:#E6E6EE;--ink:#0F1F42;--ink-2:#4B5772;--ink-3:#8B8B94;--blue:#2F49F6;--blue-soft:#EEF0FE;--green:#8DFB6B;--green-dk:#4B8539;--high:#F26A4B;--teal:#1E9C9C;--teal-soft:#E3F3F3;--act:#B4B8C8;--rail:#0F1F42;--rail-2:#1C2B52}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:13px;-webkit-font-smoothing:antialiased}
+button,select,input{font-family:inherit;font-size:12px;color:var(--ink)}
+.app{display:grid;grid-template-columns:264px 1fr;grid-template-rows:48px 1fr;height:100vh}
+.rail{grid-row:1/3;background:var(--rail);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:6px}
+.rail .logo{width:30px;height:30px;margin-bottom:14px}
+.rail .ri{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#AEB6CC}
+.rail .ri.on{background:var(--rail-2);color:#fff}
+.rail .ri svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.rail .sp{flex:1}
+.rail .av{width:28px;height:28px;border-radius:50%;background:#2F49F6;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.top{grid-column:2/3;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px}
+.crumb{color:var(--ink-3);font-size:12px;display:flex;gap:6px;align-items:center}
+.crumb b{color:var(--ink);font-weight:600}
+.top .sp{flex:1}
+.pill{border:1px solid var(--border);border-radius:6px;background:#fff;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.pill:hover{background:#F4F5FA}
+.pill.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.pill.primary:hover{background:#2238d6}
+.pill.outline{border-color:var(--blue);color:var(--blue)}
+.stamp{font-size:11px;color:var(--ink-3)}
+.nav{grid-row:1/3;grid-column:1;background:#fff;border-right:1px solid var(--border);padding:12px 10px;overflow:auto;display:flex;flex-direction:column}
+.nav .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px;border-bottom:1px solid var(--border-2);margin-bottom:12px}
+.nav .brand b{display:block;font-size:14px;letter-spacing:-.01em}.nav .brand span{display:block;font-size:11px;color:var(--ink-3);margin-top:1px}
+.nav a .tx{display:flex;flex-direction:column;min-width:0}.nav a .tx b{font-weight:600;font-size:13px}.nav a .tx small{font-size:11px;color:var(--ink-3);font-weight:400;margin-top:2px;line-height:1.3}.nav a.on .tx small{color:#5D6FF8}
+.nav a{align-items:flex-start!important;padding:9px 10px!important}.nav a .n{margin-top:1px}.nav .foot{margin-top:auto;padding-top:16px}
+.nav .pk{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:4px 8px 8px}
+.nav .appname{display:flex;gap:8px;align-items:center;padding:6px 8px 14px;font-weight:600}
+.nav .appname i{width:22px;height:22px;border-radius:6px;background:var(--green);flex:none;position:relative}
+.nav .appname i:after{content:"";position:absolute;inset:6px;border:2px solid #0F1F42;border-radius:50%}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:var(--ink-2);text-decoration:none;font-weight:500;margin-bottom:2px}
+.nav a:hover{background:#F4F5FA}
+.nav a.on{background:var(--blue-soft);color:var(--blue)}
+.nav a .n{width:20px;height:20px;border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink-3);flex:none}
+.nav a.on .n{border-color:var(--blue);color:var(--blue)}
+.nav .story{margin-top:14px;border-top:1px solid var(--border-2);padding:12px 8px 0;font-size:11px;color:var(--ink-2);line-height:1.55}
+.nav .story b{color:var(--ink)}
+.nav .foot{margin-top:12px;padding:0 8px;font-size:10.5px;color:var(--ink-3);line-height:1.5}
+.main{overflow:auto;position:relative}
+.vh{position:sticky;top:0;z-index:6;background:#fff;border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:24px;height:46px}
+.vh h1{font-size:16px;margin:0;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.tabs{display:flex;height:100%;overflow-x:auto}
+.tabs button{border:0;background:none;padding:0 12px;color:var(--ink-2);cursor:pointer;border-bottom:2px solid transparent;font-weight:500;white-space:nowrap;height:100%}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--blue);font-weight:600}
+.page{padding:16px 24px 32px;display:grid;gap:12px}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ph h2{font-size:16px;margin:0;font-weight:700;flex:1;min-width:280px;letter-spacing:-.01em}
+.fbar{display:flex;gap:8px;flex-wrap:wrap}
+.fbar select{border:1px solid var(--border);border-radius:6px;padding:7px 28px 7px 10px;background:#fff;font-weight:500;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230F1F42' fill='none' stroke-width='1.4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;max-width:210px}
+.fbar select.act{border-color:var(--blue);color:var(--blue);background-color:var(--blue-soft)}
+.fbar select:disabled{color:var(--ink-3);cursor:not-allowed;background-color:#F4F5FA}
+.lede{font-size:12px;color:var(--ink-2);margin-top:-4px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:0;position:relative}
+.ct{font-weight:700;font-size:13.5px;margin:0 0 4px;letter-spacing:-.005em;line-height:1.35}
+.cs{font-size:11.5px;color:var(--ink-2);margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tiles{display:grid;gap:12px}
+.tile{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;min-width:0}
+.tile.hl{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset}
+.tile .l{font-size:11.5px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.tile .v{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .v.good{color:#0E7A4C}.tile .v.bad{color:#B23A1E}
+.tile .s{font-size:11px;color:var(--ink-2);margin-top:2px}
+.chip{display:inline-block;font-size:10.5px;font-style:italic;color:var(--ink-2);border:1px dashed #B9BCCB;border-radius:4px;padding:2px 6px;background:#fff;white-space:nowrap}
+.tile .v .chip{font-size:11px;font-weight:500;letter-spacing:0;vertical-align:4px}
+.uf{font-size:9.5px;color:var(--ink-3);border:1px solid var(--border);border-radius:3px;padding:0 4px;font-weight:500;letter-spacing:.02em}
+.legend2{display:flex;gap:16px;font-size:11px;color:var(--ink-2);margin:4px 0 10px;flex-wrap:wrap}
+.legend2 i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.sb{display:grid;grid-template-columns:minmax(120px,170px) 1fr 64px;gap:12px;align-items:center;padding:5px 0;font-size:12px}
+.sb .tr{height:14px;background:#EEEFF5;border-radius:3px;overflow:hidden}
+.sb .tr i{display:block;height:100%;border-radius:3px;transition:width .3s}
+.sb .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.kc .eb{font-size:10.5px;font-weight:700;color:var(--blue);letter-spacing:.06em;text-transform:uppercase}
+.kc .hd{font-size:12px;color:var(--ink);margin:2px 0 12px;min-height:30px}
+.kc .lab{font-size:11.5px;color:var(--ink-2);margin:6px 0 4px}
+.kc .row{display:grid;grid-template-columns:1fr 56px;gap:10px;align-items:center}
+.kc .tr{height:14px;background:#EEEFF5;border-radius:3px;overflow:hidden}
+.kc .tr i{display:block;height:100%;border-radius:3px;transition:width .3s}
+.kc .pv{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.tbl th{font-weight:600;text-align:left;padding:8px 8px;border-bottom:1px solid var(--border);white-space:nowrap;background:#fff;position:sticky;top:0;font-size:11.5px;color:var(--ink-2)}
+.tbl td{padding:8px 8px;border-bottom:1px solid var(--border-2)}
+.tbl .r{text-align:right}
+.tbl tr.tot td{font-weight:600;border-top:1px solid var(--border)}
+.tbl tr.sel td{background:var(--blue-soft)}
+.tbl tbody tr:hover td{background:#F7F8FC}
+.tbl th.s{cursor:pointer}.tbl th .sa{color:var(--blue);font-size:10px;margin-left:3px}
+.scroll{overflow:auto}
+.note{font-size:11px;color:var(--ink-3);line-height:1.5}
+.foot2{font-size:11px;color:var(--ink-2);line-height:1.5}
+.tip{position:fixed;pointer-events:none;background:#0F1F42;color:#fff;padding:6px 9px;border-radius:6px;font-size:11.5px;z-index:99;opacity:0;transition:opacity .08s;max-width:280px;line-height:1.4}
+.flag{display:inline-block;font-size:10px;font-weight:600;color:#8A5A00;background:#FFF4D6;border:1px solid #F1D48A;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.ok{color:#0E7A4C;font-weight:600}.warn{color:#8A5A00;font-weight:600}
+svg text{font-family:Inter,system-ui,sans-serif}
+/* policy */
+.ctrls{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.ctrls label{display:block;font-size:11px;color:var(--ink-2);margin-bottom:6px;min-height:28px;line-height:1.3}
+.ctrls input,.ctrls select{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 9px;background:#fff;font-weight:500}
+.eb2{font-size:10.5px;font-weight:700;color:var(--blue);letter-spacing:.06em;margin-bottom:10px}
+/* steps */
+.steps{display:flex;gap:6px;align-items:stretch;flex-wrap:wrap}
+.step{flex:1;min-width:120px;border:1px solid var(--border);border-radius:6px;padding:10px;font-size:12px;font-weight:600;background:#fff;position:relative}
+.step small{display:block;font-weight:400;color:var(--ink-2);margin-top:4px;font-size:10.5px;line-height:1.35}
+.step.key{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset}
+.step.prop{border-style:dashed;border-color:#8E9CF8;background:var(--blue-soft)}
+.step .co{position:absolute;right:8px;top:8px;font-size:10px;color:#B23A1E;font-weight:600}
+.arr{display:flex;align-items:center;color:var(--ink-3)}
+/* process explorer (reused) */
+.pe{position:relative;height:720px;padding:0;overflow:hidden}
+.pe svg.canvas{width:100%;height:100%;cursor:grab;display:block}
+.pe svg.canvas.drag{cursor:grabbing}
+.pe .tl{position:absolute;left:12px;top:12px;display:flex;gap:6px;z-index:2}
+.pe .tr{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:8px;z-index:2;align-items:flex-end}
+.pe .br{position:absolute;right:12px;bottom:12px;display:flex;gap:6px;z-index:2}
+.tb{background:#fff;border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;gap:6px;padding:5px 8px;font-size:12px;cursor:pointer}
+.tb:hover{background:#F4F5FA}.tb.on{border-color:var(--teal);color:var(--teal)}
+.tb select{border:0;background:none;padding:0;cursor:pointer}
+.vslide{background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;width:62px}
+.vslide .lab{font-size:9.5px;color:var(--ink-3);text-align:center;line-height:1.2}
+.vslide .num{font-size:11px;font-weight:600}
+.vslide input[type=range]{writing-mode:vertical-lr;direction:rtl;height:150px;width:18px;accent-color:var(--ink)}
+.legend{position:absolute;right:12px;bottom:52px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;z-index:3;width:230px;display:none;line-height:1.6}
+.legend.show{display:block}
+.legend .sw{display:inline-block;width:22px;vertical-align:middle;margin-right:6px}
+.detail{position:absolute;left:12px;bottom:12px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;width:260px;z-index:3;display:none;font-size:12px}
+.detail.show{display:block}.detail h4{margin:0 0 8px;font-size:13px}
+.detail .x{position:absolute;right:10px;top:8px;cursor:pointer;color:var(--ink-3)}
+.rows .row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--border-2)}
+.rows .row:last-child{border-bottom:0}.rows .row b{font-weight:600;font-variant-numeric:tabular-nums}
+.node rect{fill:#fff;stroke:#C9CCD8;stroke-width:1}.node:hover rect{stroke:var(--teal)}.node.sel rect{stroke:var(--teal);stroke-width:2}.node{cursor:pointer}
+.node .t{font-size:11px;fill:var(--ink)}.node .c{font-size:9.5px;fill:var(--ink-2)}
+.elab rect{fill:#fff;stroke:#D7D9E3}.elab text{font-size:9.5px;fill:var(--ink-2)}
+.ve-list{overflow:auto}
+.ve-item{display:grid;grid-template-columns:40px 1fr 58px 44px;gap:8px;align-items:center;padding:6px 12px;cursor:pointer;font-size:11.5px;border-bottom:1px solid var(--border-2)}
+.ve-item:hover{background:#F7F8FC}.ve-item.on{background:var(--teal-soft)}
+.ve-item .bar{height:6px;background:#E6E8F0;border-radius:3px;overflow:hidden}.ve-item .bar i{display:block;height:100%;background:var(--teal)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(15,31,66,.35);display:none;align-items:center;justify-content:center;z-index:50}
+.modal.show{display:flex}
+.modal .box{background:#fff;border-radius:10px;width:min(640px,92vw);max-height:80vh;overflow:auto;padding:20px}
+.modal pre{white-space:pre-wrap;font-family:inherit;font-size:12.5px;background:#F7F8FC;border:1px solid var(--border-2);border-radius:6px;padding:12px;line-height:1.5}
+@media (max-width:1200px){.g4{grid-template-columns:1fr 1fr}.ctrls{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1000px){.g2,.g3{grid-template-columns:1fr}.app{grid-template-columns:0 1fr}.nav{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="crumb">Carbon Control Tower <span>/</span> <b id="crumbView"></b></div>
+    <div class="sp"></div>
+    <span class="stamp" id="scopeStamp"></span>
+    <button class="pill" id="resetBtn" title="Clear filters and restore recommended policy settings">↺ Reset</button>
+  </header>
+  <nav class="nav">
+    <div class="brand"><svg viewBox="0 0 32 32" width="28" height="28"><rect x="2" y="2" width="28" height="28" rx="8" fill="#8DFB6B"/><path d="M16 8c-3 4-6 7-6 11a6 6 0 0 0 12 0c0-4-3-7-6-11z" fill="#0F1F42"/></svg><div><b>Carbon Control Tower</b><span>Business travel · Net Zero 2030</span></div></div>
+    <div class="pk">Dashboards</div>
+    <a href="#overview" data-v="overview"><span class="n">1</span><span class="tx"><b>Emissions Overview</b><small>Where is the carbon, and who generates it?</small></span></a>
+    <a href="#kpis" data-v="kpis"><span class="n">2</span><span class="tx"><b>Key Carbon KPIs</b><small>How big is each problem today?</small></span></a>
+    <a href="#policy" data-v="policy"><span class="n">3</span><span class="tx"><b>Policy Impact</b><small>What would each policy save?</small></span></a>
+    <a href="#controls" data-v="controls"><span class="n">4</span><span class="tx"><b>Process Controls</b><small>Do bookings follow policy, and who breaks it?</small></span></a>
+    <a href="#trust" data-v="trust"><span class="n">5</span><span class="tx"><b>Data Trust</b><small>Can we believe the numbers?</small></span></a>
+    <div class="foot">Fictional data provided by Celonis for education. Total = transport + hotel CO2e; spend-based CO2e is a cross-check only.</div>
+  </nav>
+  <main class="main" id="main">
+    <div class="vh"><h1 id="vtitle"></h1><div class="tabs" id="vtabs"></div></div>
+    <div id="view"></div>
+  </main>
+</div>
+<div class="tip" id="tip"></div>
+<div class="modal" id="modal"><div class="box"><div style="display:flex;align-items:center;margin-bottom:10px"><b id="mTitle" style="flex:1;font-size:14px"></b><span style="cursor:pointer;color:var(--ink-3)" id="mClose">✕</span></div><div class="note" id="mNote"></div><pre id="mBody"></pre><div style="display:flex;gap:8px;justify-content:flex-end"><button class="pill" id="mCopy">Copy text</button><button class="pill primary" id="mDone">Done</button></div></div></div>
+
+<script>
+const DATA=__DATA__;
+const MAP=__MAP__;
+/* ============================== MODEL ============================== */
+const NB=DATA.BU.length,NP=DATA.P.length,MI=Object.fromEntries(DATA.M.map((k,i)=>[k,i]));
+const INTERNAL=DATA.P.indexOf('Internal Business Trip');
+const NM=DATA.NM;
+const CELLS=Object.entries(DATA.cells).map(([c,v])=>{c=+c;const mo=c%NM;let q=(c-mo)/NM;const lh=q%2;q=(q-lh)/2;const pi=q%NP;q=(q-pi)/NP;const bi=q%NB;const ri=(q-bi)/NB;return{c,ri,bi,pi,lh,mo,v}});
+const CBY=Object.fromEntries(CELLS.map(x=>[x.c,x]));
+const PSEG={};DATA.pseg.forEach(r=>(PSEG[r[0]]||(PSEG[r[0]]=[])).push(r));
+const F={r:-1,b:-1,p:-1,m:-1};
+const match=(x,ig={})=>(ig.r||F.r<0||x.ri===F.r)&&(ig.b||F.b<0||x.bi===F.b)&&(ig.p||F.p<0||x.pi===F.p)&&(ig.m||F.m<0||x.mo===F.m);
+const inF=x=>match(x);
+const filtered=()=>F.r>=0||F.b>=0||F.p>=0||F.m>=0;
+function agg(pred=()=>true,ignore={}){const s=Object.fromEntries(DATA.M.map(k=>[k,0]));CELLS.forEach(x=>{if(match(x,ignore)&&pred(x))DATA.M.forEach((k,i)=>s[k]+=x.v[i])});return s}
+function groupBy(dim,pred=()=>true,ignore={}){const out={};CELLS.forEach(x=>{if(!match(x,ignore)||!pred(x))return;const k=x[dim];const s=out[k]||(out[k]=Object.fromEntries(DATA.M.map(m=>[m,0])));DATA.M.forEach((m,i)=>s[m]+=x.v[i])});return out}
+const MONTHS=DATA.MONTHS.slice(0,13);
+const BASE_M=[1,2,3,4,5,6],CUR_M=[9,10,11];
+const inBase=x=>BASE_M.includes(x.mo),inCur=x=>CUR_M.includes(x.mo);
+const LEADLAB=['Under 3 days','3 to 6 days','7 to 13 days','14 days or more','No departure event'];
+const MED_DAYS={"Asia Pacific":25.5,"Europe":18.9,"Latin America":26.6,"Middle East & Africa":18.9,"North America":19.3};
+const POL_DEFAULT={econ:1,exempt:0,rail:1200,virt:100,cut:10,target:50};
+const pol={...POL_DEFAULT};
+
+/* ============================== UTIL ============================== */
+const $=s=>document.querySelector(s);
+const fmt=(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(a,b,d=1)=>b?(a/b*100).toFixed(d)+'%':'–';
+const fk=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':fmt(n);
+const money=n=>n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+fmt(n);
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+const tip=$('#tip');
+function showTip(ev,html){tip.innerHTML=html;tip.style.opacity=1;tip.style.left=Math.min(ev.clientX+14,innerWidth-290)+'px';tip.style.top=(ev.clientY+14)+'px'}
+function hideTip(){tip.style.opacity=0}
+function bindTip(node,html){node.addEventListener('mousemove',e=>showTip(e,typeof html==='function'?html():html));node.addEventListener('mouseleave',hideTip)}
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p}
+const registry=[];
+function mount(container,fn){const r=()=>{container.innerHTML='';fn(container,container.clientWidth)};registry.push({container,r});r()}
+let rto;addEventListener('resize',()=>{clearTimeout(rto);rto=setTimeout(()=>registry.forEach(x=>document.body.contains(x.container)&&x.r()),120)});
+const NEED=(t='needs event log')=>`<span class="chip" title="Requires timestamps from the ACTIVITIES event log, which is not in this extract">${t}</span>`;
+const UF='<span class="uf" title="Process figure from the Celonis export; not affected by filters">ALL TRIPS</span>';
+function tiles(items,cols){return `<div class="tiles" style="grid-template-columns:repeat(${cols||items.length},minmax(0,1fr))">`+items.map(t=>`<div class="tile ${t.hl?'hl':''}"><div class="l">${t.l}${t.uf&&filtered()?UF:''}</div><div class="v ${t.cls||''}">${t.v}</div>${t.s?`<div class="s">${t.s}</div>`:''}</div>`).join('')+'</div>'}
+function shareBars(rows){return rows.map(r=>`<div class="sb"><span>${r[0]}</span><div class="tr"><i style="width:${Math.min(100,r[1])}%;background:${r[2]==='co2'?'var(--blue)':r[2]==='hi'?'var(--high)':'var(--act)'}"></i></div><span class="val">${r[3]||r[1].toFixed(1)+'%'}</span></div>`).join('')}
+const LEG=`<div class="legend2"><span><i style="background:var(--act)"></i>Share of activity</span><span><i style="background:var(--blue)"></i>Share of carbon</span></div>`;
+function table(cols,rows,opt={}){return `<table class="tbl"><thead><tr>${cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>`+rows.map(r=>`<tr class="${r._cls||''}">${cols.map((c,i)=>`<td class="${c.r?'r':''}">${r[i]}</td>`).join('')}</tr>`).join('')+'</tbody></table>'}
+function hbar(c,W,{data,h=260,fmtX=v=>fmt(v),fmtTip=v=>fmt(v),labelW=120,max,color='var(--blue)'}){
+  const pad={l:labelW,r:20,t:4,b:22};const svg=el('svg',{width:W,height:h},c);const iw=W-pad.l-pad.r,ih=h-pad.t-pad.b;const mx=max||niceMax(Math.max(...data.map(d=>d[1]))*1.15);
+  const band=ih/data.length,bh=Math.min(band*.72,30);
+  for(let i=0;i<=5;i++){const t=mx*i/5,x=pad.l+iw*t/mx;el('line',{x1:x,x2:x,y1:pad.t,y2:pad.t+ih,stroke:'#E3E4EC','stroke-dasharray':'3 3'},svg);const tx=el('text',{x,y:h-5,'text-anchor':'middle','font-size':10,fill:'#4B5772'},svg);tx.textContent=fmtX(t)}
+  data.forEach((d,i)=>{const y=pad.t+band*i+(band-bh)/2;const w=Math.max(1,iw*d[1]/mx);const r=el('rect',{x:pad.l,y,width:w,height:bh,rx:3,fill:d[2]||color},svg);bindTip(r,`<b>${d[0]}</b><br>${fmtTip(d[1])}`);
+    const t=el('text',{x:pad.l-8,y:y+bh/2+3.5,'text-anchor':'end','font-size':11,fill:'#0F1F42'},svg);t.textContent=d[0];
+    const v=el('text',{x:pad.l+w+6,y:y+bh/2+3.5,'font-size':10.5,fill:'#4B5772'},svg);v.textContent=fmtTip(d[1])});
+}
+function line(c,W,{x,series,h=240,fmtY=v=>fmt(v)}){
+  const pad={l:56,r:16,t:10,b:28};const svg=el('svg',{width:W,height:h},c);const iw=W-pad.l-pad.r,ih=h-pad.t-pad.b;const mx=niceMax(Math.max(...series.flatMap(s=>s.v)));
+  for(let i=0;i<=5;i++){const t=mx*i/5,y=pad.t+ih-ih*t/mx;el('line',{x1:pad.l,x2:pad.l+iw,y1:y,y2:y,stroke:'#E3E4EC','stroke-dasharray':t?'3 3':''},svg);const tx=el('text',{x:pad.l-8,y:y+3.5,'text-anchor':'end','font-size':10,fill:'#4B5772'},svg);tx.textContent=fmtY(t)}
+  const X=i=>pad.l+iw*(i+.5)/x.length;
+  x.forEach((m,i)=>{if(i%3===1){const tx=el('text',{x:X(i),y:h-8,'text-anchor':'middle','font-size':10,fill:'#4B5772'},svg);tx.textContent=m}});
+  series.forEach(s=>{el('path',{d:s.v.map((v,i)=>(i?'L':'M')+X(i)+','+(pad.t+ih-ih*v/mx)).join(''),fill:'none',stroke:s.c,'stroke-width':2,'stroke-dasharray':s.dash||''},svg)});
+  const hl=el('line',{y1:pad.t,y2:pad.t+ih,stroke:'#8B8B94','stroke-dasharray':'2 2',opacity:0},svg);const ov=el('rect',{x:pad.l,y:pad.t,width:iw,height:ih,fill:'transparent'},svg);
+  ov.addEventListener('mousemove',e=>{const b=svg.getBoundingClientRect();const i=Math.max(0,Math.min(x.length-1,Math.round((e.clientX-b.left-pad.l)/iw*x.length-.5)));hl.setAttribute('x1',X(i));hl.setAttribute('x2',X(i));hl.setAttribute('opacity',1);showTip(e,`<b>${x[i]}</b>`+series.map(s=>`<br><span style="color:${s.c}">●</span> ${s.n}: ${fmtY(s.v[i])}`).join(''))});
+  ov.addEventListener('mouseleave',()=>{hideTip();hl.setAttribute('opacity',0)});
+}
+function modal(title,note,body){$('#mTitle').textContent=title;$('#mNote').textContent=note;$('#mBody').textContent=body;$('#modal').classList.add('show')}
+$('#mClose').onclick=$('#mDone').onclick=()=>$('#modal').classList.remove('show');
+$('#mCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('#mBody').textContent);$('#mCopy').textContent='Copied'}catch(e){$('#mCopy').textContent='Select and copy'}setTimeout(()=>$('#mCopy').textContent='Copy text',1500)};
+
+/* ============================== FILTERS + ROUTER ============================== */
+function fbar(){const o=(arr,cur,n)=>`<option value="-1">${n}</option>`+arr.map((a,i)=>`<option value="${i}" ${cur===i?'selected':''}>${a}</option>`).join('');
+  return `<div class="fbar"><select data-f="r" class="${F.r>=0?'act':''}">${o(DATA.R,F.r,'Region')}</select><select data-f="b" class="${F.b>=0?'act':''}">${o(DATA.BU,F.b,'Business unit')}</select><select data-f="p" class="${F.p>=0?'act':''}">${o(DATA.P,F.p,'Purpose')}</select><select data-f="m" class="${F.m>=0?'act':''}">${o(DATA.MONTHS.map(m=>m==='2025'?'2025 (Jan–Jun)':m),F.m,'Booking month')}</select></div>`}
+function head(title,lede){return `<div class="ph"><h2>${title}</h2>${fbar()}</div>${lede?`<div class="lede">${lede}</div>`:''}`}
+function bindFilters(){document.querySelectorAll('.fbar select[data-f]').forEach(s=>s.onchange=()=>{F[s.dataset.f]=+s.value;render()})}
+const VIEWS={overview:{t:'1 Emissions Overview',tabs:['Overview','By region','Map']},
+  kpis:{t:'2 Key Carbon KPIs',tabs:['Overview','Premium seats','Internal meetings in person','Flights where rail runs','Long haul by BU']},
+  policy:{t:'3 Policy Impact',tabs:['Policy Impact']},controls:{t:'4 Process Controls',tabs:['Where carbon is decided','Adherence today','Who breaks policy','Controls']},trust:{t:'5 Data Trust',tabs:['Data Trust']}};
+const state={tab:{}};let cur='overview';
+function route(){let v=location.hash.slice(1);if(!VIEWS[v])v='overview';cur=v;
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  $('#vtitle').textContent=VIEWS[v].t;$('#crumbView').textContent=VIEWS[v].t;const tabs=$('#vtabs');tabs.innerHTML='';
+  VIEWS[v].tabs.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;if((state.tab[v]||0)===i)b.className='on';b.onclick=()=>{state.tab[v]=i;route()};tabs.appendChild(b)});
+  $('#main').scrollTop=0;render()}
+function render(){registry.length=0;const view=$('#view');view.innerHTML='';const s=agg();
+  $('#scopeStamp').textContent=filtered()?`Filtered: ${fmt(s.trips)} of 87,053 trips`:'All 87,053 trips · booked Dec 2023 – Jun 2025';
+  ({overview:vOverview,kpis:vKpis,policy:vPolicy,controls:vControls,trust:vTrust})[cur](view,state.tab[cur]||0);bindFilters()}
+addEventListener('hashchange',route);
+function page(html){const d=document.createElement('div');d.className='page';d.innerHTML=html;return d}
+
+/* ============================== 1 EMISSIONS OVERVIEW ============================== */
+function routeAgg(){const out={};DATA.routes.forEach(([c,ri,n,t,ni])=>{if(!inF(CBY[c]))return;const o=out[ri]||(out[ri]={n:0,t:0,ni:0});o.n+=n;o.t+=t;o.ni+=ni});return out}
+function vOverview(view,tab){
+  const s=agg(),lh=agg(x=>x.lh);
+  if(tab===0){
+    const ra=Object.entries(routeAgg()).map(([i,o])=>({name:DATA.RT[i][0],...o})).sort((a,b)=>b.t-a.t);const totT=ra.reduce((a,b)=>a+b.t,0);const top=ra.slice(0,10);const topSh=top.reduce((a,b)=>a+b.t,0)/totT*100;
+    const p=page(head('Where the carbon is: long haul and premium seats')+
+      tiles([{l:'Total tCO2e',v:fmt(s.tot/1000),s:'transport + hotels'},{l:'Total spend',v:money(s.spend)},{l:'kg CO2e per $1,000',v:fmt(s.tot/s.spend*1000)},{l:'kg CO2e per trip',v:fmt(s.tot/s.trips)},{l:'Lead-time policy breaches',v:pct(s.oop,s.trips),s:'compliance measure, not carbon'},{l:'Long-haul trip share of tCO2e',v:pct(lh.tot,s.tot),s:'trips with a flight over 3,700 km',hl:1}])+
+      `<div class="g3" style="grid-template-columns:1.35fr 1fr 1.1fr">
+        <div class="card"><div class="ct">Flights over 3,700 km are ${pct(s.b1,s.flegs)} of flights and ${pct(s.k1,s.fkg)} of flight carbon</div>${LEG}
+          ${shareBars([['Over 3,700 km · flights',s.b1/s.flegs*100,'act'],['Over 3,700 km · tCO2e',s.k1/s.fkg*100,'co2'],['1,500–3,700 · flights',s.b2/s.flegs*100,'act'],['1,500–3,700 · tCO2e',s.k2/s.fkg*100,'co2'],['Under 1,500 · flights',s.b3/s.flegs*100,'act'],['Under 1,500 · tCO2e',s.k3/s.fkg*100,'co2']])}</div>
+        <div class="card"><div class="ct">Transport is ${pct(s.tkg,s.tot,0)} of the footprint</div>
+          <div class="rows" style="margin-top:8px"><div class="row"><span>Transport</span><b>${fmt(s.tkg/1000)} t</b></div><div class="row"><span>Hotels</span><b>${fmt(s.hkg/1000)} t</b></div></div>
+          <div style="display:flex;height:14px;border-radius:3px;overflow:hidden;margin-top:14px"><i style="width:${s.tkg/s.tot*100}%;background:var(--blue)"></i><i style="flex:1;background:var(--act)"></i></div>
+          <div class="note" style="margin-top:8px">Hotels allocated by nights at the arrival city.</div></div>
+        <div class="card"><div class="ct">Top 10 of ${ra.length} routes carry about ${topSh.toFixed(0)}% of tCO2e</div>
+          <div style="margin-top:8px">${top.map(r=>`<div class="sb" style="grid-template-columns:150px 1fr 48px;padding:4px 0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</span><div class="tr" style="height:10px"><i style="width:${r.t/top[0].t*100}%;background:var(--blue)"></i></div><span class="val">${(r.t/totT*100).toFixed(1)}%</span></div>`).join('')}</div></div></div>
+      <div class="foot2">Fictional data provided by Celonis for education. Total = transport + hotel CO2e; spend-based CO2e is a cross-check only.</div>`);
+    view.appendChild(p);
+  } else if(tab===1){ overviewRegion(view); } else {
+    const byC={};Object.entries(routeAgg()).forEach(([i,o])=>{const cc=DATA.RT[i][2];const b=byC[cc]||(byC[cc]={t:0,n:0});b.t+=o.t;b.n+=o.n});
+    const vals=Object.values(byC).map(o=>o.t).filter(v=>v>0);const mn=Math.min(...vals),mx=Math.max(...vals);
+    const shades=['#4CC498','#3AAE84','#2C9871','#1F825F','#146B4C','#0A5539','#004027'];
+    const col=v=>{if(!v)return '#D5D6E0';const t=mx>mn?Math.log(v/mn)/Math.log(mx/mn):1;return shades[Math.min(6,Math.floor(t*7))]};
+    const p=page(head('Where the trips land: tCO2e by destination country')+`<div class="card" style="padding:12px 14px"><div id="mapw" style="position:relative;height:620px;overflow:hidden"><svg id="map" viewBox="0 0 1000 620" style="width:100%;height:100%;cursor:grab"></svg>
+      <div style="position:absolute;right:6px;bottom:30px;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:4px;background:#fff"><button class="tb" style="border:0" id="zin">+</button><button class="tb" style="border:0;border-top:1px solid var(--border);border-radius:0" id="zout">−</button></div>
+      <div style="position:absolute;left:0;bottom:0;font-size:10.5px">Total tCO2e: <span style="display:inline-flex;vertical-align:middle">${shades.map(s=>`<i style="width:20px;height:8px;background:${s};display:inline-block"></i>`).join('')}</span><div style="display:flex;justify-content:space-between;width:210px;margin-left:68px"><span>${fmt(mn)}</span><span>${fmt(mx)}</span></div></div></div>
+      <div class="note">Trip tCO2e (transport + hotel) attributed to the arrival country. Responds to the Region, Business unit and Purpose filters.</div></div>`);
+    view.appendChild(p);const svg=$('#map'),g=el('g',{},svg);
+    MAP.forEach(m=>{const o=byC[m.a];const pth=el('path',{d:m.d,fill:col(o&&o.t),stroke:'#6E7183','stroke-width':.4,'vector-effect':'non-scaling-stroke'},g);
+      bindTip(pth,`<b>${m.n}</b>`+(o?`<br>${fmt(o.t)} tCO2e<br>${fmt(o.n)} arriving trips`:'<br>No arrivals in scope'));pth.addEventListener('mouseenter',()=>pth.setAttribute('stroke-width',1.4));pth.addEventListener('mouseleave',()=>pth.setAttribute('stroke-width',.4))});
+    let k=1,tx=0,ty=0;const ap=()=>g.setAttribute('transform',`translate(${tx},${ty}) scale(${k})`);
+    const zoom=f=>{const nk=Math.max(1,Math.min(8,k*f));tx=500-(500-tx)*nk/k;ty=310-(310-ty)*nk/k;k=nk;if(k===1){tx=ty=0}ap()};
+    $('#zin').onclick=()=>zoom(1.5);$('#zout').onclick=()=>zoom(1/1.5);svg.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?1.2:1/1.2)},{passive:false});
+    let dr=null;svg.addEventListener('mousedown',e=>{dr={x:e.clientX,y:e.clientY,tx,ty}});addEventListener('mouseup',()=>dr=null);svg.addEventListener('mousemove',e=>{if(!dr)return;const sc=1000/svg.clientWidth;tx=dr.tx+(e.clientX-dr.x)*sc;ty=dr.ty+(e.clientY-dr.y)*sc;ap()});
+  }
+}
+
+/* ============================== 2 BENCHMARKING ============================== */
+function overviewRegion(view){
+  const all=agg(),byR=groupBy('ri',()=>true,{r:1}),allR=agg(()=>true,{r:1});
+  const rows=DATA.R.map((r,i)=>({r,i,...(byR[i]||{trips:0,tot:0,spend:0,lhlegs:0,premkg:0,fkg:0})})).filter(x=>x.trips).sort((a,b)=>b.tot-a.tot);
+  const kpt=x=>x.tot/x.trips;const top=rows[0],low=[...rows].sort((a,b)=>kpt(a)-kpt(b))[0];
+  const byB=groupBy('bi');const buArr=Object.entries(byB).map(([i,o])=>[DATA.BU[i],o.tot/all.tot*100]).sort((a,b)=>b[1]-a[1]);const top3=buArr.slice(0,3).reduce((a,b)=>a+b[1],0);
+  const pArr=Object.entries(groupBy('pi')).map(([i,o])=>[DATA.P[i],o.tot/o.trips]).sort((a,b)=>b[1]-a[1]);
+  const p=page(head('Who generates the carbon: region, business unit, purpose','The region comparison ignores the Region filter; the selected region is highlighted. Policy breaches by region and unit are on 4 Process Controls, Who breaks policy.')+
+    `<div class="card"><div class="ct">${top.r} generates ${pct(top.tot,allR.tot,0)} of tCO2e at ${fmt(kpt(top))} kg per trip, ${(kpt(top)/kpt(low)).toFixed(0)}x ${low.r}: its routes are long haul</div>
+      ${table([{h:'Departure region'},{h:'Trips',r:1},{h:'tCO2e',r:1},{h:'Share of tCO2e',r:1},{h:'kg per trip',r:1},{h:'kg per $1,000',r:1},{h:'Long-haul legs per 100 trips',r:1},{h:'Premium share of flight tCO2e',r:1}],
+        rows.map(x=>Object.assign([x.r,fmt(x.trips),fmt(x.tot/1000),pct(x.tot,allR.tot),fmt(kpt(x)),fmt(x.tot/x.spend*1000),(x.lhlegs/x.trips*100).toFixed(1),pct(x.premkg,x.fkg)],{_cls:x.i===F.r?'sel':''})))}</div>
+    <div class="g2"><div class="card"><div class="ct">Carbon per trip follows distance, not region</div><div class="cs">kg CO2e per trip by departure region</div><div id="rg1"></div></div>
+      <div class="card"><div class="ct">Long-haul legs per 100 trips explain the ranking</div><div class="cs">Flight legs over 3,700 km per 100 trips</div><div id="rg2"></div></div></div>
+    <div class="g2"><div class="card"><div class="ct">${buArr.slice(0,3).map(b=>b[0]).join(', ').replace(/, ([^,]*)$/,' and $1')} generate ${top3.toFixed(0)}% of tCO2e, by volume</div><div class="cs">Share of tCO2e by business unit</div><div id="rg3"></div></div>
+      <div class="card"><div class="ct">Every purpose runs about ${fmt(Math.round(all.tot/all.trips/100)*100)} kg per trip: purpose drives volume, not intensity</div><div class="cs">kg CO2e per trip by purpose</div><div id="rg4"></div></div></div>
+    <div class="card" style="background:#F7F8FC"><div class="ct">Peer context</div><div class="foot2">Deloitte reported business travel at 33.9% of its 2023 Scope 3 emissions. Methodologies differ; this is context, not a ranking.</div></div>`);
+  view.appendChild(p);
+  const col=x=>x.i===F.r?'var(--high)':'var(--blue)';
+  mount($('#rg1'),(c,W)=>hbar(c,W,{data:[...rows].sort((a,b)=>kpt(b)-kpt(a)).map(x=>[x.r,kpt(x),col(x)]),h:200,labelW:130,fmtTip:v=>fmt(v)+' kg'}));
+  mount($('#rg2'),(c,W)=>hbar(c,W,{data:[...rows].sort((a,b)=>b.lhlegs/b.trips-a.lhlegs/a.trips).map(x=>[x.r,x.lhlegs/x.trips*100,col(x)]),h:200,labelW:130,fmtX:v=>fmt(v),fmtTip:v=>v.toFixed(1)+' legs'}));
+  mount($('#rg3'),(c,W)=>hbar(c,W,{data:buArr.map((b,i)=>[b[0],b[1],i<3?'var(--blue)':'#8B8B94']),h:340,labelW:140,fmtX:v=>v.toFixed(0)+'%',fmtTip:v=>v.toFixed(1)+'%'}));
+  mount($('#rg4'),(c,W)=>hbar(c,W,{data:pArr,h:200,labelW:150,fmtTip:v=>fmt(v)+' kg'}));
+}
+
+/* ============================== 3 KEY CARBON KPIs ============================== */
+function buRows(n=6){const byB=groupBy('bi');return Object.entries(byB).map(([i,o])=>({i:+i,name:DATA.BU[i],...o})).sort((a,b)=>b.trips-a.trips).slice(0,n)}
+const BUFOOT='<div class="note" style="margin-top:8px">Top 6 of 14 units by trips. Every unit sits within the same range.</div>';
+function kcard(eb,hd,a,b,al,bl){return `<div class="card kc"><div class="eb">${eb}</div><div class="hd">${hd}</div><div class="lab">${al}</div><div class="row"><div class="tr"><i style="width:${a}%;background:var(--act)"></i></div><span class="pv">${a.toFixed(1)}%</span></div><div class="lab">${bl}</div><div class="row"><div class="tr"><i style="width:${b}%;background:var(--blue)"></i></div><span class="pv">${b.toFixed(1)}%</span></div></div>`}
+function vKpis(view,tab){
+  const s=agg(),lh=agg(x=>x.lh);let html='';
+  if(tab===0){
+    html=head('Overview: how big is each problem today?','These are today\'s problems. What each policy saves is on 3 Policy Impact; whether bookings follow the policies is on 4 Process Controls.')+
+    `<div class="legend2" style="margin:0"><span><i style="background:var(--act)"></i>Share of activity</span><span><i style="background:var(--blue)"></i>Share of carbon</span><span>Same 0–100% scale on every chart</span></div>
+    <div class="g4">${kcard('Premium cabins',fmt(s.prem)+' premium flight legs',s.prem/s.flegs*100,s.premkg/s.fkg*100,'of flight legs','of leg emissions')}
+    ${kcard('Internal meetings in person',fmt(s.internal)+' internal trips',s.internal/s.trips*100,s.intkg/s.tot*100,'of trips','of total tCO2e')}
+    ${kcard('Flights where rail runs',fmt(s.corrlegs)+' corridor flight legs',s.corrlegs/s.flegs*100,s.corrkg/s.fkg*100,'of flight legs','of flight tCO2e')}
+    ${kcard('Long-haul flights',`${fmt(lh.trips)} long-haul trips · ${pct(lh.tot,s.tot)} of tCO2e · ${fmt(s.lhlegs)} legs over 3,700 km`,s.lhlegs/s.flegs*100,s.lhkg/s.fkg*100,'of flight legs','of flight tCO2e')}</div>
+    <div class="card"><div class="ct">Every unit shows the same pattern; Sales and Marketing carry it at scale</div>${table([{h:'Business unit'},{h:'Trips',r:1},{h:'Premium % flights',r:1},{h:'Internal % trips',r:1},{h:'Corridor / 100 trips',r:1},{h:'Long haul / 100 trips',r:1}],
+      buRows().map(b=>[b.name,fmt(b.trips),pct(b.prem,b.flegs),pct(b.internal,b.trips),(b.corrlegs/b.trips*100).toFixed(1),(b.lhlegs/b.trips*100).toFixed(1)]))}${BUFOOT}</div>
+    <div class="foot2">Carbon figures overlap (most premium legs are also long haul), so never add the four. Counts are legs, each including its return. Fictional data provided by Celonis for education.</div>`;
+  } else if(tab===1){
+    html=head('Premium cabins','Answered by the policy <b>Economy instead of premium</b> (3 Policy Impact).')+
+    tiles([{l:'Premium flight legs',v:fmt(s.prem),s:pct(s.prem,s.flegs)+' of flights'},{l:'Share of leg emissions',v:pct(s.premkg,s.fkg)},{l:'Uplift over economy',v:fmt(s.upl/1000),s:'tCO2e · '+pct(s.upl,s.tot,0)+' of the footprint',hl:1}])+
+    `<div class="g2"><div class="card"><div class="ct">${pct(s.prem,s.flegs,0)} of flights, ${pct(s.premkg,s.fkg,0)} of flight emissions</div><div class="legend2"><span><i style="background:var(--act)"></i>Flight legs</span><span><i style="background:var(--blue)"></i>Leg emissions</span></div>
+      ${shareBars([['Premium · legs',s.prem/s.flegs*100,'act'],['Premium · emissions',s.premkg/s.fkg*100,'co2'],['Economy · legs',(1-s.prem/s.flegs)*100,'act'],['Economy · emissions',(1-s.premkg/s.fkg)*100,'co2']])}</div>
+    <div class="card"><div class="ct">Sales and Marketing add the most premium carbon at the same rate as everyone</div>${table([{h:'Business unit'},{h:'Premium legs',r:1},{h:'% of flights',r:1},{h:'Uplift tCO2e',r:1}],buRows().map(b=>[b.name,fmt(b.prem),pct(b.prem,b.flegs),fmt(b.upl/1000)]))}${BUFOOT}</div></div>
+    <div class="foot2">Uplift = the leg's tCO2e minus an economy seat on the same route.</div>`;
+  } else if(tab===2){
+    const ra=Object.entries(routeAgg()).map(([i,o])=>({name:DATA.RT[i][0].replace(' → ',' to '),km:DATA.RT[i][1],...o})).filter(r=>r.ni>0).map(r=>({...r,tkm:r.ni*r.km*2})).sort((a,b)=>b.tkm-a.tkm);
+    const allKm=ra.reduce((a,b)=>a+b.tkm,0);const two=ra.slice(0,2).reduce((a,b)=>a+b.tkm,0);
+    const med=(()=>{const arr=[...ra].sort((a,b)=>a.km-b.km);const half=arr.reduce((a,b)=>a+b.ni,0)/2;let c=0;for(const r of arr){c+=r.ni;if(c>=half)return r.km}return 0})();
+    html=head('Internal meetings held in person','Answered by the policy <b>Internal meetings held virtually</b> (3 Policy Impact).')+
+    tiles([{l:'Internal trips',v:fmt(s.internal),s:`${pct(s.internal,s.trips)} of trips · ${pct(s.intlh,s.internal,0)} include a long-haul leg`},{l:'Internal trip tCO2e',v:fmt(s.intkg/1000),s:pct(s.intkg,s.tot)+' of total tCO2e',hl:1},(()=>{const b=agg(inBase,{m:1}),c=agg(inCur,{m:1});const d=(c.internal/c.trips-b.internal/b.trips)*100;return {l:'Share change vs baseline',v:(d>=0?'+':'')+d.toFixed(1)+' pts',s:`${pct(c.internal,c.trips)} Sep–Nov vs ${pct(b.internal,b.trips)} Jan–Jun 2024`}})()])+
+    `<div class="g2"><div class="card"><div class="ct">${ra.length>1?`Two ${ra[0].name.split(' to ')[0]===ra[1].name.split(' to ')[0]?ra[0].name.split(' to ')[0]+' ':''}routes cover ${pct(two,allKm,0)} of internal travel distance`:'Internal routes'}</div><div class="cs">Internal routes ranked by total km traveled = trips × round-trip distance. Top 10 of ${ra.length}; ${(allKm/1e6).toFixed(1)}M km in all. Median trip ${fmt(med)} km each way.</div>
+      ${table([{h:'Route'},{h:'Total km, millions',r:1},{h:'trips × km each way',r:1}],ra.slice(0,10).map(r=>[r.name,(r.tkm/1e6).toFixed(1)+'M',`${fmt(r.ni)} × ${fmt(r.km)}`]))}</div>
+    <div class="card"><div class="ct">Every unit sends ${(()=>{const b=buRows(14).map(x=>x.internal/x.trips*100);return Math.floor(Math.min(...b))+'% to '+Math.ceil(Math.max(...b))+'%'})()} of trips as internal travel</div>${table([{h:'Business unit'},{h:'Internal trips',r:1},{h:'% of trips',r:1},{h:'tCO2e',r:1}],buRows().map(b=>[b.name,fmt(b.internal),pct(b.internal,b.trips),fmt(b.intkg/1000)]))}${BUFOOT}</div></div>
+    <div class="foot2">In-person internal trips only. Virtual meetings are not in the data, so this is the size of the gap, not an adoption rate.</div>`;
+  } else if(tab===3){
+    const cs={};DATA.corridors.forEach(([c,si,f,tn])=>{if(!inF(CBY[c]))return;const o=cs[si]||(cs[si]={f:0,t:0});o.f+=f;o.t+=tn});
+    const crow=Object.entries(cs).map(([i,o])=>({name:DATA.CS[i][0],km:DATA.CS[i][1],...o})).sort((a,b)=>b.f-a.f);
+    const tf=crow.reduce((a,b)=>a+b.f,0),tt=crow.reduce((a,b)=>a+b.t,0),km=crow.reduce((a,b)=>a+b.f*b.km*2,0);const top=crow[0]||{name:'–',f:0,t:0};const bu=buRows();
+    html=head('Flights where rail already runs','Answered by the policy <b>Rail on proven corridors</b> (3 Policy Impact).')+
+    tiles([{l:'Corridor flight legs',v:fmt(tf),s:`${(km/1.609/1e6).toFixed(1)}M mi · ${(km/1e6).toFixed(1)}M km`},{l:'Corridor flight tCO2e',v:fmt(s.corrkg/1000),s:pct(s.corrkg,s.fkg,1)+' of flight tCO2e'},{l:'Rail share on corridors',v:pct(tt,tt+tf),s:fmt(tt)+' train legs',hl:1}])+
+    `<div class="g2"><div class="card"><div class="ct">${top.name.replace(' – ',' to ')} flies ${fmt(top.f)} times; the train runs ${fmt(top.t)}</div><div class="cs">Routes under 1,200 km where our travelers already take the train</div>
+      ${table([{h:'Corridor'},{h:'km',r:1},{h:'Flights',r:1},{h:'Trains',r:1},{h:'Rail share',r:1}],crow.map(r=>[r.name,fmt(r.km),fmt(r.f),fmt(r.t),pct(r.t,r.t+r.f,0)]))}</div>
+    <div class="card"><div class="ct">${bu[0]?bu[0].name:''} flies the most corridor legs; every unit flies ${(()=>{const b=buRows(14).map(x=>x.corrlegs/x.trips*100);return Math.floor(Math.min(...b))+' to '+Math.ceil(Math.max(...b))})()} per 100 trips</div>${table([{h:'Business unit'},{h:'Corridor flights',r:1},{h:'Per 100 trips',r:1}],bu.map(b=>[b.name,fmt(b.corrlegs),(b.corrlegs/b.trips*100).toFixed(1)]))}${BUFOOT}</div></div>
+    <div class="foot2">Corridor = a route under 1,200 km with at least one train leg in our own bookings. Berlin – Madrid (336 train legs at about 1,870 km) sits outside the threshold; see 5 Data Trust.</div>`;
+  } else {
+    const bu=buRows(14);const top=bu.slice(0,6);
+    html=head('Long-haul flying by business unit')+
+    tiles([{l:'Long-haul flight legs',v:fmt(s.lhlegs),s:`${pct(s.lhlegs,s.flegs)} of flights · ${(s.lhlegs/s.trips*100).toFixed(1)} per 100 trips`},{l:'Long-haul tCO2e',v:fmt(s.lhkg/1000),s:'flight legs over 3,700 km'},{l:'Share of leg emissions',v:pct(s.lhkg,s.fkg),hl:1}])+
+    `<div class="card"><div class="ct">Every unit sends ${(()=>{const v=bu.map(b=>{const l=groupBy('bi',x=>x.lh)[b.i];return l?l.trips/b.trips*100:0});return Math.floor(Math.min(...v))+'% to '+Math.ceil(Math.max(...v))+'%'})()} of its trips long haul, and those trips carry about ${pct(lh.tot,s.tot,0)} of its carbon</div>
+      ${(()=>{const L=groupBy('bi',x=>x.lh);const rows=top.map(b=>{const l=L[b.i]||{trips:0,tot:0};return [b.name,fmt(b.trips),fmt(l.trips),pct(l.trips,b.trips,0),fmt(l.tot/1000),pct(l.tot,b.tot,0)]});rows.push(Object.assign([`All ${bu.length} units`,fmt(s.trips),fmt(lh.trips),pct(lh.trips,s.trips),fmt(lh.tot/1000),pct(lh.tot,s.tot)],{_cls:'tot'}));
+        return table([{h:'Business unit'},{h:'Trips',r:1},{h:'Long-haul trips',r:1},{h:'Long-haul share of trips',r:1},{h:'Long-haul trip tCO2e',r:1},{h:'Long-haul trip share of tCO2e',r:1}],rows)})()}</div>
+    <div class="card"><div class="ct">${top[0]?top[0].name:''} flies ${top[0]?pct(top[0].lhlegs,s.lhlegs,0):''} of all long-haul legs, at the same rate per trip as every unit</div>${(()=>{const B=groupBy('bi',inBase,{m:1}),C=groupBy('bi',inCur,{m:1});return table([{h:'Business unit'},{h:'Long-haul legs',r:1},{h:'Share',r:1},{h:'Per 100 trips',r:1},{h:'Change vs baseline, per 100 trips',r:1}],top.map(b=>{const x=B[b.i],y=C[b.i];const d=x&&y?y.lhlegs/y.trips*100-x.lhlegs/x.trips*100:0;return [b.name,fmt(b.lhlegs),pct(b.lhlegs,s.lhlegs),(b.lhlegs/b.trips*100).toFixed(1),`<span class="${d>0.5?'warn':''}">${(d>=0?'+':'')+d.toFixed(1)}</span>`]}))})()}${BUFOOT}</div>
+    <div class="foot2">Long haul = over 3,700 km (BEIS boundary). Beijing–New Delhi (≈3,780 km, 4,783 legs) sits on the line. Change compares trips booked Sep–Nov 2024 with Jan–Jun 2024 (booking month from the event log).</div>`;
+  }
+  view.appendChild(page(html));
+}
+
+/* ============================== 4 POLICY IMPACT ============================== */
+function engine(o,pred=inF){
+  const R={B:0,S:0,rail:0,cab:0,virt:0,lh:0,cd:0,trips:0,tAv:0,spAv:0,lhAv:0,lhSp:0,byR:{},byB:{},byM:{}};
+  CELLS.forEach(x=>{if(!pred(x))return;const v=x.v;const base=v[MI.tot]/1000;let rail=0,cab=0,cd=0;
+    (PSEG[x.c]||[]).forEach(r=>{const sg=DATA.SG[r[1]],km=sg[1];if(o.rail>0&&sg[2]&&km<=o.rail){rail+=r[4]-r[6];return}
+      if(o.econ&&r[2]>0&&(!o.exempt||km<=o.exempt)){cab+=r[4]-r[5];cd+=r[7]}});
+    const rem=base-rail-cab,int=x.pi===INTERNAL,n=v[MI.trips],sp=v[MI.spend];
+    const vs=int?rem*o.virt/100:0,ls=x.lh?(rem-vs)*o.cut/100:0;const tv=int?n*o.virt/100:0,tl=x.lh?(n-tv)*o.cut/100:0;const spv=int?sp*o.virt/100:0,spl=x.lh?(sp-spv)*o.cut/100:0;
+    const S=base-rail-cab-vs-ls;R.B+=base;R.S+=S;R.rail+=rail;R.cab+=cab;R.virt+=vs;R.lh+=ls;R.cd+=cd;R.trips+=n;R.tAv+=tv+tl;R.spAv+=spv;R.lhAv+=tl;R.lhSp+=spl;
+    [['byR',x.ri],['byB',x.bi],['byM',x.mo]].forEach(([k,i])=>{const g=R[k][i]||(R[k][i]={B:0,S:0,trips:0,lhT:0,lhS:0});g.B+=base;g.S+=S;g.trips+=n;g.lhT+=x.lh?n:0;g.lhS+=ls})});
+  return R}
+function vPolicy(view){
+  const p=page(head('What the four policies save')+`<div class="card"><div class="eb2">POLICY CONTROLS</div><div class="ctrls">
+    <div><label>Economy instead of premium (1 = on)</label><select id="pEcon"><option value="1">1</option><option value="0">0</option></select></div>
+    <div><label>Premium still allowed on flights over (km), 0 = none</label><input type="number" id="pExempt" min="0" step="100"></div>
+    <div><label>Rail on proven corridors up to (km)</label><input type="number" id="pRail" min="0" max="1200" step="50"></div>
+    <div><label>Internal meetings held virtually (%)</label><input type="number" id="pVirt" min="0" max="100"></div>
+    <div><label>Long-haul budget cut per BU (%)</label><input type="number" id="pCut" min="0" max="100"></div>
+    <div><label>2030 target cut (%)</label><input type="number" id="pTarget" min="0" max="100"></div></div>
+    <div class="note" style="margin-top:10px">Upper bounds that assume full compliance. Opens at the recommended settings. Fictional data provided by Celonis for education.</div></div><div id="polOut" style="display:grid;gap:12px"></div>`);
+  view.appendChild(p);
+  const bind=(id,k)=>{const e=$(id);e.value=pol[k];e.oninput=()=>{let v=+e.value||0;if(k==='rail')v=Math.min(v,1200);if(['virt','cut','target'].includes(k))v=Math.max(0,Math.min(100,v));pol[k]=Math.max(0,v);calc()}};
+  bind('#pEcon','econ');bind('#pExempt','exempt');bind('#pRail','rail');bind('#pVirt','virt');bind('#pCut','cut');bind('#pTarget','target');calc();
+}
+function calc(){
+  const o=pol,R=engine(o);const T=R.B*(1-o.target/100),gap=R.S-T;const z={econ:0,exempt:0,rail:0,virt:0,cut:0};
+  const alone={rail:engine({...z,rail:o.rail}).rail,cab:engine({...z,econ:o.econ,exempt:o.exempt}),virt:engine({...z,virt:o.virt}),lh:engine({...z,cut:o.cut})};
+  const idGap=R.B-R.S-(R.rail+R.cab+R.virt+R.lh);window.__idGap=idGap;
+  const bu=Object.entries(R.byB).map(([i,g])=>({name:DATA.BU[i],...g})).sort((a,b)=>b.trips-a.trips).slice(0,6);
+  const rg=DATA.R.map((r,i)=>({r,...(R.byR[i]||{B:0,S:0,trips:0})})).filter(x=>x.trips);
+  $('#polOut').innerHTML=`<div class="card"><div class="ct">The selected policies cut ${pct(R.B-R.S,R.B)} of travel carbon</div><div style="margin-top:10px">${tiles([{l:'Baseline tCO2e',v:fmt(R.B)},{l:'Scenario tCO2e',v:fmt(R.S)},{l:'Reduction %',v:pct(R.B-R.S,R.B),hl:1},{l:'Gap to 2030 target',v:(gap>0?'+':'')+fmt(gap),cls:gap>0?'bad':'good',s:gap>0?'red while above target':'scenario beats the target'}])}</div></div>
+   <div class="g2"><div class="card"><div class="ct">What each lever saves (t)</div><div class="cs">Applied in this order; the four add up exactly to Baseline minus Scenario</div>
+     ${table([{h:'Lever'},{h:'At these settings',r:1},{h:'Alone',r:1}],[['Rail corridors saving',fmt(R.rail),fmt(alone.rail)],['Economy cabins saving',fmt(R.cab),fmt(alone.cab.cab)],['Virtual meetings saving',fmt(R.virt),fmt(alone.virt.virt)],['Long-haul budget saving',fmt(R.lh),fmt(alone.lh.lh)],Object.assign(['Total',fmt(R.rail+R.cab+R.virt+R.lh),''],{_cls:'tot'})])}</div>
+   <div class="card"><div class="ct">Directional dollars</div><div class="cs">Fare differences, not modelled price responses</div>
+     ${table([{h:'Measure'},{h:'At these settings',r:1},{h:'Alone',r:1}],[['Cabin dollars saved',money(R.cd),money(alone.cab.cd)],['Avoided trip spend',money(R.spAv-R.lhSp),money(alone.virt.spAv)],['Trips avoided',fmt(R.tAv-R.lhAv),fmt(alone.virt.tAv)],['Long-haul avoided spend',money(R.lhSp),money(alone.lh.lhSp)],['Long-haul trips avoided',fmt(R.lhAv),fmt(alone.lh.lhAv)]])}</div></div>
+   <div class="card"><div class="ct">Impact by business unit</div>${table([{h:'Business unit'},{h:'Trips',r:1},{h:'Baseline tCO2e',r:1},{h:'Scenario tCO2e',r:1},{h:'Reduction %',r:1},{h:'Long-haul trips',r:1},{h:'Long-haul trips allowed',r:1},{h:'Long-haul budget saving',r:1}],
+     bu.map(b=>[b.name,fmt(b.trips),fmt(b.B),fmt(b.S),pct(b.B-b.S,b.B),fmt(b.lhT),fmt(b.lhT*(1-o.cut/100)),fmt(b.lhS)]))}<div class="note" style="margin-top:8px">Top 6 of 14 units. Allowed = long-haul trips × (1 − cut).</div></div>
+   <div class="g2" style="grid-template-columns:1fr 1.2fr"><div class="card"><div class="ct">${(()=>{const s=[...rg].sort((a,b)=>b.B-a.B);return s.length>1?`${s[0].r} carries ${pct(s[0].B,R.B,0)} of the baseline; ${[...rg].sort((a,b)=>(b.B-b.S)/b.B-(a.B-a.S)/a.B)[0].r} cuts deepest`:'Region'})()}</div>
+     ${table([{h:'Region'},{h:'Trips',r:1},{h:'Baseline tCO2e',r:1},{h:'Scenario tCO2e',r:1},{h:'Reduction %',r:1}],rg.sort((a,b)=>b.B-a.B).map(x=>[x.r,fmt(x.trips),fmt(x.B),fmt(x.S),pct(x.B-x.S,x.B)]))}</div>
+   <div class="card"><div class="ct">Scenario against the 2030 target</div><div class="cs">tCO2e by booking month, Dec 2023 – Dec 2024 (bookings from 2025 omitted)</div><div id="glide"></div><div class="legend2" style="justify-content:center"><span><i style="background:#8B8B94"></i>Baseline</span><span><i style="background:#2F49F6"></i>Scenario</span><span><i style="background:#F26A4B"></i>Target</span></div></div></div>`;
+  const base=MONTHS.map((m,i)=>(R.byM[i]||{B:0}).B),scen=MONTHS.map((m,i)=>(R.byM[i]||{S:0}).S);
+  mount($('#glide'),(c,W)=>line(c,W,{x:MONTHS,h:230,series:[{n:'Baseline',v:base,c:'#8B8B94',dash:'4 3'},{n:'Target',v:base.map(v=>v*(1-o.target/100)),c:'#F26A4B'},{n:'Scenario',v:scen,c:'#2F49F6'}]}));
+}
+
+/* ============================== 5 PROCESS CONTROLS ============================== */
+__PE__
+function variantExplorer(box){
+  const ACTN=PEX.ACT.map(a=>a[0]);
+  box.innerHTML=`<div style="display:flex;gap:8px;padding:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border-2)"><b style="font-size:13px;flex:1">Variant Explorer</b>
+    <div class="tb"><select id="vF"><option value="1">All trips</option><option value="2">Mode changed after booking</option><option value="3">Upgraded into premium</option></select></div></div>
+    <div style="display:flex;gap:6px;padding:8px 12px;align-items:center"><div class="tb"><b id="vN">1</b> variants</div><div class="tb" id="vCov"></div><input type="range" id="vS" min="1" max="60" value="1" style="flex:1;accent-color:#1E9C9C"></div>
+    <div style="display:flex;flex:1;min-height:0;border-top:1px solid var(--border-2)"><svg id="vsvg" style="flex:1.1;min-width:0;height:100%"></svg><div class="ve-list" id="vlist" style="flex:1;border-left:1px solid var(--border-2)"></div></div>`;
+  let sel=0,fi=1,n=1;let rows=[],tot=1;
+  const recompute=()=>{rows=PEX.VAR.map((v,i)=>({i,seq:v[0],c:v[fi],co2:v[4],all:v[1]})).filter(v=>v.c>0).sort((a,b)=>b.c-a.c);tot=fi===1?87053:PEX.VAR.reduce((a,v)=>a+v[fi],0);$('#vS').max=rows.length;if(!rows.find(r=>r.i===sel))sel=rows[0].i};
+  function drawList(){$('#vlist').innerHTML=rows.map((r,k)=>`<div class="ve-item ${r.i===sel?'on':''}" data-i="${r.i}" style="${k<n?'':'opacity:.45'}"><b>#${k+1}</b><div class="bar"><i style="width:${r.c/rows[0].c*100}%"></i></div><span style="text-align:right">${fmt(r.c)}</span><span style="text-align:right;color:var(--ink-3)">${(r.c/tot*100).toFixed(1)}%</span></div>`).join('');
+    $('#vlist').querySelectorAll('.ve-item').forEach(it=>it.onclick=()=>{sel=+it.dataset.i;drawList();drawPath()});
+    $('#vN').textContent=n;$('#vCov').textContent=(rows.slice(0,n).reduce((a,r)=>a+r.c,0)/tot*100).toFixed(0)+'% covered'}
+  function drawPath(){const s=$('#vsvg');s.innerHTML='';const r=rows.find(x=>x.i===sel);if(!r)return;const path=['Start',...r.seq.map(i=>ACTN[i]),'End'];const W=s.clientWidth||300,H=s.clientHeight||500;
+    const hd=el('text',{x:14,y:22,'font-size':12,'font-weight':700,fill:'#0F1F42'},s);hd.textContent=`${fmt(r.c)} trips (${(r.c/tot*100).toFixed(1)}%) · ${r.seq.length} steps`;
+    const sub=el('text',{x:14,y:38,'font-size':10.5,fill:'#4B5772'},s);sub.textContent=`${fmt(r.co2)} tCO2e · ${fmt(r.co2*1000/r.all)} kg per trip`;
+    const gap=Math.min(46,(H-80)/(path.length-1)),x=30;
+    path.forEach((p,i)=>{const y=58+i*gap;if(i<path.length-1){el('line',{x1:x,x2:x,y1:y+6,y2:y+gap-8,stroke:'#1E9C9C','stroke-width':5},s);el('path',{d:`M${x-5},${y+gap-12}L${x},${y+gap-6}L${x+5},${y+gap-12}z`,fill:'#1E9C9C'},s)}
+      el('circle',{cx:x,cy:y,r:6,fill:'#fff',stroke:'#1E9C9C','stroke-width':2.5},s);const se=p==='Start'||p==='End';const main=MAINSEQ.includes(p);
+      if(!se)el('rect',{x:x+14,y:y-11,width:Math.min(W-x-20,p.length*5.7+18),height:22,rx:4,fill:main?'#fff':'#FFF4EF',stroke:main?'#C9CCD8':'#F2B9A8'},s);
+      const t=el('text',{x:x+20,y:y+4,'font-size':10.5,'font-weight':se?700:400,fill:'#0F1F42'},s);t.textContent=p})}
+  $('#vS').oninput=e=>{n=+e.target.value;drawList()};$('#vF').onchange=e=>{fi=+e.target.value;recompute();n=1;$('#vS').value=1;drawList();drawPath()};
+  recompute();drawList();requestAnimationFrame(drawPath);registry.push({container:box,r:drawPath});
+}
+function vControls(view,tab){
+  const s=agg();let html='';
+  if(tab===0){
+    const up=s.nmB+s.nmF,upO=s.oopB+s.oopF;const chg=s.nmE+s.nmB+s.nmF+s.nmT+s.nmC;
+    const mc=[['Updated Economy Flight',s.nmE,0],['Updated Business Class Flight',s.nmB,1],['Updated First Class Flight',s.nmF,1],['Updated Train',s.nmT,0],['Updated car (any)',s.nmC,0]];const mx=Math.max(...mc.map(m=>m[1]),1);
+    html=head('Where carbon is decided','Mode, cabin and route are fixed at Book Mode of Transportation. Approval comes after and never checks cabin, distance or mode, so every carbon rule is checked at the booking request.')+
+    tiles([{l:'tCO2e set before approval',v:pct(s.nochgkg,s.tot),s:'on trips with no mode change after booking',hl:1},{l:'Approval rate',v:pct(s.appr,s.trips),s:`${fk(s.appr)} of ${fk(s.trips)} trips`},{l:'Upgrades into premium',v:fmt(up),s:'after booking'},{l:'Breach share of premium upgrades',v:pct(upO,up),s:'base rate '+pct(s.oop,s.trips)}])+
+    `<div class="card"><div class="ct">Dominant variant (${(PEX.DOMN/870.53).toFixed(0)}% of trips), carbon-weighted</div><div class="cs">Event tCO2e allocated to each step for the ${fmt(PEX.DOMN)} trips on this path; dashed step is the proposed control</div>
+      <div class="steps">${PEX.DOM.map((d,k)=>{const key=k===0,dep=/Take Departure/.test(d[0]);const note=key?'Mode, cabin and route fixed here':d[0]==='Travel Request Approved'?'Checks no cabin, distance or mode':'';
+        return `<div class="step ${key?'key':''}">${d[0]}<small>${note}${note&&d[1]?' · ':''}${d[1]>=1?(dep||/Return/.test(d[0])?'<b style="color:#B23A1E">'+fmt(d[1])+' tCO2e released</b>':fmt(d[1])+' tCO2e'):''}</small></div>`+(k===0?'<div class="arr">→</div><div class="step prop">Carbon Policy Check<small>Proposed: the four rules, rerun on any change</small></div>':'')+(k<PEX.DOM.length-1?'<div class="arr">→</div>':'')}).join('')}</div>
+      <div class="note" style="margin-top:8px">Across all trips, ${fmt(PEX.ACT.find(a=>a[0]==='Book Mode of Transportation')[3])} tCO2e (${PEX.HELD}%) is held at booking: those trips have no departure event in the log.</div></div>
+    <div class="g2" style="grid-template-columns:1.45fr 1fr"><div class="card pe" id="pe"></div><div class="card pe" id="ve" style="display:flex;flex-direction:column"></div></div>
+    <div class="card"><div class="ct">${fmt(chg)} trips changed mode after booking; ${fmt(up)} moved up into premium</div><div style="margin-top:8px">${mc.map(m=>`<div class="sb" style="grid-template-columns:200px 1fr 64px"><span>${m[0]}</span><div class="tr"><i style="width:${m[1]/mx*100}%;background:${m[2]?'var(--high)':'var(--act)'}"></i></div><span class="val">${fmt(m[1])}</span></div>`).join('')}</div></div>
+    <div class="note">Process Explorer and Variant Explorer are built from Trip_Event_Log (895,366 events, 34 activities, all trips; filters do not apply). Event tCO2e puts departure and return carbon on the travel events, hotel carbon on Book Lodging, and any carbon without a travel event on Book Mode of Transportation.</div>`;
+    view.appendChild(page(html));processExplorer($('#pe'));variantExplorer($('#ve'));return;
+  }
+  if(tab===1){
+    const LB=[0,1,2,3,4].map(k=>[LEADLAB[k],s['lb'+k],s['lo'+k]]);const tb=LB.reduce((a,b)=>a+b[2],0)||1;const lt14=s.lo0+s.lo1+s.lo2;
+    html=head('Adherence today')+tiles([{l:'Lead-time policy breaches',v:pct(s.oop,s.trips),s:fmt(s.oop)+' trips',hl:0},{l:'Breaching trips approved',v:pct(s.oopAppr,s.oop),s:'approval does not stop breaches',hl:1,cls:s.oopAppr/s.oop>.8?'bad':''},{l:'Median days ahead, breaches',v:PEX.MEDB[0].toFixed(1),s:'booking clock',uf:1},{l:'Median days ahead, compliant',v:PEX.MEDB[1].toFixed(1),s:'booking clock',uf:1},{l:'Trips booked under 3 days',v:fmt(s.lb0),s:pct(s.lb0,s.trips)+' of trips'}])+
+    `<div class="g2"><div class="card"><div class="ct">The one rule we have: ${pct(s.oop,s.trips)} of trips break it, ${pct(lt14,s.oop,0)} of them booked under 14 days ahead</div><div class="cs">Share of all lead-time breaches by days booked ahead (first booking to first departure)</div>
+      ${LB.map(l=>`<div class="sb"><span>${l[0]}</span><div class="tr"><i style="width:${l[2]/tb*100}%;background:var(--high)"></i></div><span class="val">${(l[2]/tb*100).toFixed(1)}%</span></div>`).join('')}
+      <div class="note" style="margin-top:6px">The rule is 14 days for flights, 7 for cars, 3 for trains. ${pct(s.lo0,s.lb0,0)} of trips booked under 3 days ahead break it; no trip booked 14+ days ahead does.</div></div>
+    <div class="card"><div class="ct">Upgrades after booking: about ${pct(s.oopB+s.oopF,s.nmB+s.nmF,0)} break policy</div>${table([{h:'Moved to'},{h:'Trips',r:1},{h:'Lead-time breaches',r:1}],[['Business',fmt(s.nmB),pct(s.oopB,s.nmB)],['First',fmt(s.nmF),pct(s.oopF,s.nmF)],['Economy',fmt(s.nmE),pct(s.oopE,s.nmE)],['Train',fmt(s.nmT),pct(s.oopT,s.nmT)],['Car (any)',fmt(s.nmC),pct(s.oopC,s.nmC)]])}</div></div>
+`;
+    view.appendChild(page(html));
+    return;
+  }
+  if(tab===2){
+    const brs=DATA.breach.filter(b=>inF(CBY[b[1]])).slice(0,15);
+    const byR=groupBy('ri',()=>true,{r:1}),byB=groupBy('bi',()=>true,{b:1});
+    const R=DATA.R.map((r,i)=>({n:r,i,...(byR[i]||{trips:0})})).filter(x=>x.trips),B=DATA.BU.map((r,i)=>({n:r,i,...(byB[i]||{trips:0})})).filter(x=>x.trips);
+    const rate=x=>x.oop/x.trips;const wR=[...R].sort((a,b)=>rate(b)-rate(a))[0],wB=[...B].sort((a,b)=>rate(b)-rate(a))[0],bR=[...R].sort((a,b)=>b.s2/b.trips-a.s2/a.trips)[0];
+    const cols=[{h:''},{h:'Trips',r:1},{h:'Lead-time breaches',r:1},{h:'Breach rate',r:1},{h:'Trips breaking 2+ carbon rules',r:1},{h:'Rate',r:1},{h:'Their share of tCO2e',r:1}];
+    const rowOf=(x,sel)=>Object.assign([x.n,fmt(x.trips),fmt(x.oop),pct(x.oop,x.trips),fmt(x.s2),pct(x.s2,x.trips),pct(x.s2kg,x.tot)],{_cls:sel?'sel':''});
+    html=head('Who breaks policy','Two measures: the lead-time rule enforced today, and the four proposed carbon rules (a trip breaking two or more is a policy breach trip). Region and unit comparisons ignore their own filter; the selection is highlighted.')+
+    tiles([{l:'Lead-time policy breaches',v:pct(s.oop,s.trips),s:fmt(s.oop)+' trips'},{l:'Policy breach trips (2+ carbon rules)',v:fmt(s.s2),s:pct(s.s2,s.trips)+' of trips'},{l:'Policy breach share of tCO2e',v:pct(s.s2kg,s.tot),hl:1},{l:'Highest lead-time breach rate',v:wR.n,s:pct(wR.oop,wR.trips)+' of its trips'}])+
+    `<div class="g2"><div class="card"><div class="ct">${wR.n} breaks the lead-time rule most (${pct(wR.oop,wR.trips,0)}); ${bR.n} breaks the carbon rules most (${pct(bR.s2,bR.trips,0)})</div><div class="cs">Lead-time breach rate by departure region</div><div id="wb1"></div></div>
+      <div class="card"><div class="ct">Business units break the lead-time rule at ${(()=>{const v=B.filter(x=>x.trips>500).map(rate);return (Math.min(...v)*100).toFixed(0)+'% to '+(Math.max(...v)*100).toFixed(0)+'%'})()}: a booking-habit problem, not one unit</div><div class="cs">Lead-time breach rate by business unit (units with 500+ trips)</div><div id="wb2"></div></div></div>
+    <div class="card"><div class="ct">By departure region</div>${table([{h:'Departure region'},...cols.slice(1)],[...R].sort((a,b)=>b.oop-a.oop).map(x=>rowOf(x,x.i===F.r)))}</div>
+    <div class="card"><div class="ct">By business unit</div><div class="scroll" style="max-height:420px">${table([{h:'Business unit'},...cols.slice(1)],[...B].sort((a,b)=>b.oop-a.oop).map(x=>rowOf(x,x.i===F.b)))}</div></div>
+    <div class="card"><div class="ct">Trips breaking two or more rules, highest score first, then largest</div><div class="cs">Score: one point each for a premium flight, an internal trip flown, a corridor flight, a long-haul flight. No employee column.</div>
+      <div class="scroll" style="max-height:420px">${table([{h:'Trip',r:1},{h:'Business unit'},{h:'Region'},{h:'Purpose'},{h:'Policy breach score',r:1},{h:'tCO2e',r:1},{h:'Lead-time breach',r:1}],brs.map(b=>{const c=CBY[b[1]];return [b[0],DATA.BU[c.bi],DATA.R[c.ri],DATA.P[c.pi],b[2],b[3].toFixed(1),b[4]]}))}</div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="pill primary" id="emailBU">Email the BU manager</button><button class="pill outline" id="digest">Send this week's digest</button></div></div>`;
+    view.appendChild(page(html));
+    mount($('#wb1'),(c,W)=>hbar(c,W,{data:[...R].sort((a,b)=>rate(b)-rate(a)).map(x=>[x.n,rate(x)*100,x===wR||x.i===F.r?'var(--high)':'var(--blue)']),h:200,labelW:130,fmtX:v=>v.toFixed(0)+'%',fmtTip:v=>v.toFixed(1)+'%'}));
+    mount($('#wb2'),(c,W)=>hbar(c,W,{data:B.filter(x=>x.trips>500).sort((a,b)=>rate(b)-rate(a)).map(x=>[x.n,rate(x)*100,x===wB||x.i===F.b?'var(--high)':'var(--blue)']),h:300,labelW:150,fmtX:v=>v.toFixed(0)+'%',fmtTip:v=>v.toFixed(1)+'%'}));
+    const scope=[F.b>=0?DATA.BU[F.b]:'All business units',F.r>=0?DATA.R[F.r]:null,F.p>=0?DATA.P[F.p]:null].filter(Boolean).join(' · ');
+    $('#emailBU').onclick=()=>modal('Draft: email to BU manager','This app cannot send email. Copy the draft into your mail client.',`Subject: ${fmt(s.s2)} trips breaking two or more travel carbon rules (${scope})\n\nHi,\n\nIn ${scope}, ${fmt(s.s2)} trips (${pct(s.s2,s.trips)}) break two or more of the four travel carbon rules, and they account for ${pct(s.s2kg,s.tot)} of tCO2e.\n\nLargest five:\n${brs.slice(0,5).map(b=>`- Trip ${b[0]}: score ${b[2]}, ${b[3].toFixed(1)} tCO2e${b[4]?', lead-time breach':''}`).join('\n')}\n\nPlease review open bookings before travel.\n\nTravel Carbon Control Tower`);
+    $('#digest').onclick=()=>modal("Draft: this week's digest",'This app cannot send messages. Copy the text into your channel or email.',`Travel carbon digest (${scope})\n\n- Lead-time breaches: ${pct(s.oop,s.trips)} of trips (${fmt(s.oop)})\n- Trips breaking 2+ rules: ${fmt(s.s2)}, ${pct(s.s2kg,s.tot)} of tCO2e\n- Upgrades into premium after booking: ${fmt(s.nmB+s.nmF)}, ${pct(s.oopB+s.oopF,s.nmB+s.nmF)} breach lead time\n- Premium flight legs: ${pct(s.prem,s.flegs)} of flights, ${pct(s.premkg,s.fkg)} of flight emissions`);
+    return;
+  }
+  const lh=groupBy('bi',x=>x.lh);const bu=buRows();
+  html=head('Controls that make the policies hold')+`<div class="card"><div class="ct">Each policy is a rule checked at the booking request</div><div class="scroll">${table([{h:'Policy'},{h:'Rule at booking request'},{h:'Alert and routing'},{h:'Conformance KPI'},{h:'Owner'}],[
+    ['Economy instead of premium','Premium needs a pre-approved exception','Fare blocked; exception to approver with carbon difference','Premium flight legs without exception','Travel manager'],
+    ['Internal meetings held virtually','Internal trip needs a reason','Video prompt; reason to approver','Internal share change','BU heads'],
+    ['Rail on proven corridors','Corridor flight needs a reason','Rail option and its carbon shown','Corridor flight legs; rail share on corridors','Travel manager'],
+    ['Long-haul budget per BU',"Checks the unit's remaining budget",'Past budget, BU-head approval','Long-haul trips vs budget','BU heads, Sustainability lead'],
+    ['All four','Rerun on any change of mode, cabin or route','Upgrade treated as a new booking','Rebookings into premium','Travel manager']])}</div></div>
+    <div class="g2">${tiles([{l:'Target-policy conformance rate',v:pct(s.s0,s.trips),s:'trips breaking none of the four trip rules',hl:1}],1)}${tiles([{l:'Conformance to intended process',v:pct(CELLS.filter(inF).reduce((a,x)=>a+(PEX.CONF[x.c]||0),0),s.trips),s:'trips that pass booking, request, approval, confirmation and expense steps in order'}],1)}</div>
+    <div class="g2" style="grid-template-columns:1.5fr 1fr"><div class="card"><div class="ct">Long-haul budget by business unit</div><div class="cs">Budget follows the cut set on 3 Policy Impact (${pol.cut}%). Baseline = Jan–Jun 2024 average; current = Sep–Nov 2024 average, by booking month.</div>
+      ${table([{h:'Business unit'},{h:'Long-haul trips/mo, baseline',r:1},{h:`Budget/mo, ${pol.cut}% cut`,r:1},{h:'Current/mo',r:1},{h:'Used',r:1}],(()=>{const B=groupBy('bi',x=>x.lh&&inBase(x),{m:1}),C=groupBy('bi',x=>x.lh&&inCur(x),{m:1});return bu.map(b=>{const t=(B[b.i]||{trips:0}).trips/6,c=(C[b.i]||{trips:0}).trips/3,bud=t*(1-pol.cut/100),u=bud?c/bud:0;return [b.name,fmt(t),fmt(bud),fmt(c),`<span class="${u>1?'warn':'ok'}" style="${u>1?'color:#B23A1E':''}">${(u*100).toFixed(0)}%</span>`]})})())}
+      <div class="note" style="margin-top:8px">Red above 100%. Rule-by-rule rates for each unit are on 2 Key Carbon KPIs, Overview.</div></div>
+    <div class="card"><div class="ct">Review cadence</div><ul style="padding-left:18px;line-height:1.75;margin:6px 0;font-size:12.5px">
+      <li><b>Daily:</b> data refresh; Action Flow alerts on new rule breaks</li><li><b>Weekly:</b> BU managers clear the breach queue before travel</li>
+      <li><b>Monthly:</b> Sustainability lead reviews conformance by rule and unit, and budget used</li><li><b>Quarterly:</b> BU heads review budget against actual and new paths in Variant Explorer; reset the cut on the 2030 glide path</li>
+      <li><b>Yearly:</b> corridor list, 1,200 km and 3,700 km thresholds, emission factors</li></ul></div></div>`;
+  view.appendChild(page(html));
+}
+
+/* ============================== 6 DATA TRUST ============================== */
+function vTrust(view){
+  const s=agg();const R=engine(pol);const idGap=R.B-R.S-(R.rail+R.cab+R.virt+R.lh);const lh=agg(x=>x.lh);
+  const html=head('The numbers reconcile','Each check below names the view it protects. Long haul counts any flight over 3,700 km; a great-circle recount of the raw files gives the same 60,390 flights and 51,873 trips.')+
+  tiles([{l:'Trip-level tCO2e',v:fmt(s.tot/1000)},{l:'Event-level tCO2e',v:fmt(PEX.EVT),s:'reconciles exactly with trips',uf:1},{l:'Held at booking',v:PEX.HELD+'%',s:fmt(PEX.HELDT)+' trips with no travel event · pipeline 16.0%',uf:1},{l:'Flagged routes',v:'3',s:'Sydney → Perth by train'}])+
+  `<div class="card"><div class="ct">Checks</div><div class="cs">Compliance uses the booking clock; the confirmation clock also counts approval time</div>${table([{h:'Check'},{h:'Value',r:1},{h:'Expect',r:1},{h:'Protects',r:1}],[
+    ['Train routes missing from the corridor list','<span class="warn">2</span> <span class="note">Berlin – Madrid (336 train legs, ≈1,870 km); Sydney – Perth (3, flagged)</span>','0','2 Key Carbon KPIs, 3 Policy Impact'],
+    ['Lever identity gap (t)',`<span class="${Math.abs(idGap)<0.5?'ok':'warn'}">${fmt(Math.abs(idGap),1)}</span>`,'0 at any settings','3 Policy Impact'],
+    ['Long-haul flights / trips, great-circle recount',`<span class="ok">${fmt(s.lhlegs)} / ${fmt(lh.trips)}</span>`,filtered()?'scope':'60,390 / 51,873','1, 2, 3'],
+    ['Leg tCO2e with no trip','<span class="ok">0</span>','about 672 in the pipeline','Every view'],
+    ['Median days, confirmation clock, breaches','<span class="ok">0.02</span>','about 0.02','4 Process Controls'],
+    ['Days booked ahead, breaches (booking clock)','<span class="ok">'+PEX.MEDB[0].toFixed(2)+'</span>','record','4 Process Controls']])}</div>
+  <div class="card"><div class="ct">How the carbon figures in this app were built</div><div class="foot2" style="line-height:1.65">Leg tCO2e is distance-based: great-circle km between the booked cities × a BEIS-style factor by haul band and cabin (with radiative forcing and an 8% routing uplift), doubled for the return leg; trains and cars use per-km factors. Totals are calibrated to the Climatiq pipeline: region totals match the pipeline's regional scorecard exactly, the cabin uplift matches 76,976 t, and cabin dollars match $72.5M. Uncalibrated cross-checks land within 1%: premium share of leg emissions ${pct(s.premkg,s.fkg)} (pipeline 53.3%), long-haul trip share ${pct(lh.tot,s.tot)} (90.5%), Sydney → Frankfurt ≈22%. Swap in CASES and LEG_EMISSIONS from the data pool to replace the model.</div></div>`;
+  view.appendChild(page(html));
+}
+
+$('#resetBtn').onclick=()=>{F.r=F.b=F.p=F.m=-1;Object.assign(pol,POL_DEFAULT);render()};
+route();
+</script>
+</body>
+</html>

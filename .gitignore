@@ -1,0 +1,7 @@
+# Source data from the Celonis capstone (not redistributed)
+data/raw/
+data/.cache/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
