@@ -2,7 +2,9 @@
 
 A standalone web application, styled after the Celonis platform, for decarbonizing corporate business travel toward Net Zero 2030. It rebuilds an MSBA capstone's Celonis Studio dashboards as a single self-contained page, including a process explorer and a variant explorer built from the trip event log.
 
-**Run it:** open `index.html` in a browser. The page needs no server and no build step: data, charts and map are inlined. Only the Inter font loads from Google Fonts.
+**Live app:** https://alec-prime.github.io/carbon-control-tower/
+
+**Run it locally:** open `index.html` in a browser. The page needs no server and no build step: data, charts and map are inlined. Only the Inter font loads from Google Fonts.
 
 > Data is fictional and was provided by Celonis for educational use. Nothing here represents Celonis's actual travel policy or footprint.
 
