@@ -188,6 +188,7 @@ const MAP=__MAP__;
 const NB=DATA.BU.length,NP=DATA.P.length,MI=Object.fromEntries(DATA.M.map((k,i)=>[k,i]));
 const INTERNAL=DATA.P.indexOf('Internal Business Trip');
 const NM=DATA.NM;
+const FX=DATA.FACTS,MC=[...FX.missCorr].sort((a,b)=>b[1]-a[1]);
 const CELLS=Object.entries(DATA.cells).map(([c,v])=>{c=+c;const mo=c%NM;let q=(c-mo)/NM;const lh=q%2;q=(q-lh)/2;const pi=q%NP;q=(q-pi)/NP;const bi=q%NB;const ri=(q-bi)/NB;return{c,ri,bi,pi,lh,mo,v}});
 const CBY=Object.fromEntries(CELLS.map(x=>[x.c,x]));
 const PSEG={};DATA.pseg.forEach(r=>(PSEG[r[0]]||(PSEG[r[0]]=[])).push(r));
@@ -373,7 +374,7 @@ function vKpis(view,tab){
     `<div class="g2"><div class="card"><div class="ct">${top.name.replace(' – ',' to ')} flies ${fmt(top.f)} times; the train runs ${fmt(top.t)}</div><div class="cs">Routes under 1,200 km where our travelers already take the train</div>
       ${table([{h:'Corridor'},{h:'km',r:1},{h:'Flights',r:1},{h:'Trains',r:1},{h:'Rail share',r:1}],crow.map(r=>[r.name,fmt(r.km),fmt(r.f),fmt(r.t),pct(r.t,r.t+r.f,0)]))}</div>
     <div class="card"><div class="ct">${bu[0]?bu[0].name:''} flies the most corridor legs; every unit flies ${(()=>{const b=buRows(14).map(x=>x.corrlegs/x.trips*100);return Math.floor(Math.min(...b))+' to '+Math.ceil(Math.max(...b))})()} per 100 trips</div>${table([{h:'Business unit'},{h:'Corridor flights',r:1},{h:'Per 100 trips',r:1}],bu.map(b=>[b.name,fmt(b.corrlegs),(b.corrlegs/b.trips*100).toFixed(1)]))}${BUFOOT}</div></div>
-    <div class="foot2">Corridor = a route under 1,200 km with at least one train leg in our own bookings. Berlin – Madrid (336 train legs at about 1,870 km) sits outside the threshold; see 5 Data Trust.</div>`;
+    <div class="foot2">Corridor = a route under 1,200 km with at least one train leg in our own bookings. ${MC.length?`${MC[0][0]} (${fmt(MC[0][1])} train legs at about ${fmt(MC[0][2])} km) sits outside the threshold; `:''}see 5 Data Trust.</div>`;
   } else {
     const bu=buRows(14);const top=bu.slice(0,6);
     html=head('Long-haul flying by business unit')+
@@ -382,7 +383,7 @@ function vKpis(view,tab){
       ${(()=>{const L=groupBy('bi',x=>x.lh);const rows=top.map(b=>{const l=L[b.i]||{trips:0,tot:0};return [b.name,fmt(b.trips),fmt(l.trips),pct(l.trips,b.trips,0),fmt(l.tot/1000),pct(l.tot,b.tot,0)]});rows.push(Object.assign([`All ${bu.length} units`,fmt(s.trips),fmt(lh.trips),pct(lh.trips,s.trips),fmt(lh.tot/1000),pct(lh.tot,s.tot)],{_cls:'tot'}));
         return table([{h:'Business unit'},{h:'Trips',r:1},{h:'Long-haul trips',r:1},{h:'Long-haul share of trips',r:1},{h:'Long-haul trip tCO2e',r:1},{h:'Long-haul trip share of tCO2e',r:1}],rows)})()}</div>
     <div class="card"><div class="ct">${top[0]?top[0].name:''} flies ${top[0]?pct(top[0].lhlegs,s.lhlegs,0):''} of all long-haul legs, at the same rate per trip as every unit</div>${(()=>{const B=groupBy('bi',inBase,{m:1}),C=groupBy('bi',inCur,{m:1});return table([{h:'Business unit'},{h:'Long-haul legs',r:1},{h:'Share',r:1},{h:'Per 100 trips',r:1},{h:'Change vs baseline, per 100 trips',r:1}],top.map(b=>{const x=B[b.i],y=C[b.i];const d=x&&y?y.lhlegs/y.trips*100-x.lhlegs/x.trips*100:0;return [b.name,fmt(b.lhlegs),pct(b.lhlegs,s.lhlegs),(b.lhlegs/b.trips*100).toFixed(1),`<span class="${d>0.5?'warn':''}">${(d>=0?'+':'')+d.toFixed(1)}</span>`]}))})()}${BUFOOT}</div>
-    <div class="foot2">Long haul = over 3,700 km (BEIS boundary). Beijing–New Delhi (≈3,780 km, 4,783 legs) sits on the line. Change compares trips booked Sep–Nov 2024 with Jan–Jun 2024 (booking month from the event log).</div>`;
+    <div class="foot2">Long haul = over 3,700 km (BEIS boundary). Beijing–New Delhi (≈${fmt(FX.bdKm)} km, ${fmt(FX.bdLegs)} legs) sits just over the line. Change compares trips booked Sep–Nov 2024 with Jan–Jun 2024 (booking month from CASES).</div>`;
   }
   view.appendChild(page(html));
 }
@@ -420,7 +421,7 @@ function calc(){
   $('#polOut').innerHTML=`<div class="card"><div class="ct">The selected policies cut ${pct(R.B-R.S,R.B)} of travel carbon</div><div style="margin-top:10px">${tiles([{l:'Baseline tCO2e',v:fmt(R.B)},{l:'Scenario tCO2e',v:fmt(R.S)},{l:'Reduction %',v:pct(R.B-R.S,R.B),hl:1},{l:'Gap to 2030 target',v:(gap>0?'+':'')+fmt(gap),cls:gap>0?'bad':'good',s:gap>0?'red while above target':'scenario beats the target'}])}</div></div>
    <div class="g2"><div class="card"><div class="ct">What each lever saves (t)</div><div class="cs">Applied in this order; the four add up exactly to Baseline minus Scenario</div>
      ${table([{h:'Lever'},{h:'At these settings',r:1},{h:'Alone',r:1}],[['Rail corridors saving',fmt(R.rail),fmt(alone.rail)],['Economy cabins saving',fmt(R.cab),fmt(alone.cab.cab)],['Virtual meetings saving',fmt(R.virt),fmt(alone.virt.virt)],['Long-haul budget saving',fmt(R.lh),fmt(alone.lh.lh)],Object.assign(['Total',fmt(R.rail+R.cab+R.virt+R.lh),''],{_cls:'tot'})])}</div>
-   <div class="card"><div class="ct">Directional dollars</div><div class="cs">Fare differences, not modelled price responses</div>
+   <div class="card"><div class="ct">Directional dollars</div><div class="cs">Fare differences, not modelled price responses; a premium fare is taken as ${FX.fareMult}x the economy fare</div>
      ${table([{h:'Measure'},{h:'At these settings',r:1},{h:'Alone',r:1}],[['Cabin dollars saved',money(R.cd),money(alone.cab.cd)],['Avoided trip spend',money(R.spAv-R.lhSp),money(alone.virt.spAv)],['Trips avoided',fmt(R.tAv-R.lhAv),fmt(alone.virt.tAv)],['Long-haul avoided spend',money(R.lhSp),money(alone.lh.lhSp)],['Long-haul trips avoided',fmt(R.lhAv),fmt(alone.lh.lhAv)]])}</div></div>
    <div class="card"><div class="ct">Impact by business unit</div>${table([{h:'Business unit'},{h:'Trips',r:1},{h:'Baseline tCO2e',r:1},{h:'Scenario tCO2e',r:1},{h:'Reduction %',r:1},{h:'Long-haul trips',r:1},{h:'Long-haul trips allowed',r:1},{h:'Long-haul budget saving',r:1}],
      bu.map(b=>[b.name,fmt(b.trips),fmt(b.B),fmt(b.S),pct(b.B-b.S,b.B),fmt(b.lhT),fmt(b.lhT*(1-o.cut/100)),fmt(b.lhS)]))}<div class="note" style="margin-top:8px">Top 6 of 14 units. Allowed = long-haul trips × (1 − cut).</div></div>
@@ -465,10 +466,10 @@ function vControls(view,tab){
     `<div class="card"><div class="ct">Dominant variant (${(PEX.DOMN/870.53).toFixed(0)}% of trips), carbon-weighted</div><div class="cs">Event tCO2e allocated to each step for the ${fmt(PEX.DOMN)} trips on this path; dashed step is the proposed control</div>
       <div class="steps">${PEX.DOM.map((d,k)=>{const key=k===0,dep=/Take Departure/.test(d[0]);const note=key?'Mode, cabin and route fixed here':d[0]==='Travel Request Approved'?'Checks no cabin, distance or mode':'';
         return `<div class="step ${key?'key':''}">${d[0]}<small>${note}${note&&d[1]?' · ':''}${d[1]>=1?(dep||/Return/.test(d[0])?'<b style="color:#B23A1E">'+fmt(d[1])+' tCO2e released</b>':fmt(d[1])+' tCO2e'):''}</small></div>`+(k===0?'<div class="arr">→</div><div class="step prop">Carbon Policy Check<small>Proposed: the four rules, rerun on any change</small></div>':'')+(k<PEX.DOM.length-1?'<div class="arr">→</div>':'')}).join('')}</div>
-      <div class="note" style="margin-top:8px">Across all trips, ${fmt(PEX.ACT.find(a=>a[0]==='Book Mode of Transportation')[3])} tCO2e (${PEX.HELD}%) is held at booking: those trips have no departure event in the log.</div></div>
+      <div class="note" style="margin-top:8px">Across all trips, ${fmt(PEX.ACT.find(a=>a[0]==='Book Mode of Transportation')[3])} tCO2e (${PEX.HELD}%) is held at booking on ${fmt(PEX.HELDT)} trips: the log has no travel event matching the booked leg, and ${fmt(PEX.NODEP)} of them have no departure event at all.</div></div>
     <div class="g2" style="grid-template-columns:1.45fr 1fr"><div class="card pe" id="pe"></div><div class="card pe" id="ve" style="display:flex;flex-direction:column"></div></div>
     <div class="card"><div class="ct">${fmt(chg)} trips changed mode after booking; ${fmt(up)} moved up into premium</div><div style="margin-top:8px">${mc.map(m=>`<div class="sb" style="grid-template-columns:200px 1fr 64px"><span>${m[0]}</span><div class="tr"><i style="width:${m[1]/mx*100}%;background:${m[2]?'var(--high)':'var(--act)'}"></i></div><span class="val">${fmt(m[1])}</span></div>`).join('')}</div></div>
-    <div class="note">Process Explorer and Variant Explorer are built from Trip_Event_Log (895,366 events, 34 activities, all trips; filters do not apply). Event tCO2e puts departure and return carbon on the travel events, hotel carbon on Book Lodging, and any carbon without a travel event on Book Mode of Transportation.</div>`;
+    <div class="note">Process Explorer and Variant Explorer are built from ACTIVITIES (${fmt(FX.events)} events, ${PEX.ACT.length} activities, all trips; filters do not apply). Event tCO2e is the Event_CO2e column: departure and return carbon on the travel events, hotel carbon on Book Lodging, and carbon with no matching travel event held at Book Mode of Transportation.</div>`;
     view.appendChild(page(html));processExplorer($('#pe'));variantExplorer($('#ve'));return;
   }
   if(tab===1){
@@ -527,16 +528,22 @@ function vControls(view,tab){
 /* ============================== 6 DATA TRUST ============================== */
 function vTrust(view){
   const s=agg();const R=engine(pol);const idGap=R.B-R.S-(R.rail+R.cab+R.virt+R.lh);const lh=agg(x=>x.lh);
-  const html=head('The numbers reconcile','Each check below names the view it protects. Long haul counts any flight over 3,700 km; a great-circle recount of the raw files gives the same 60,390 flights and 51,873 trips.')+
-  tiles([{l:'Trip-level tCO2e',v:fmt(s.tot/1000)},{l:'Event-level tCO2e',v:fmt(PEX.EVT),s:'reconciles exactly with trips',uf:1},{l:'Held at booking',v:PEX.HELD+'%',s:fmt(PEX.HELDT)+' trips with no travel event · pipeline 16.0%',uf:1},{l:'Flagged routes',v:'3',s:'Sydney → Perth by train'}])+
+  const ok=(v,good=true)=>`<span class="${good?'ok':'warn'}">${v}</span>`,sc=filtered()?'scope':null;
+  const fl0=FX.flagged[0]||['',''];
+  const html=head('The numbers reconcile','Each check below names the view it protects. Long haul counts any flight over 3,700 km; recounting from the DIM_CITY coordinates gives the same '+fmt(FX.lhLegsGc)+' flights and '+fmt(FX.lhTripsGc)+' trips as the distance column.')+
+  tiles([{l:'Trip-level tCO2e',v:fmt(s.tot/1000)},{l:'Event-level tCO2e',v:fmt(PEX.EVT),s:'reconciles exactly with trips',uf:1},{l:'Held at booking',v:PEX.HELD+'%',s:fmt(PEX.HELDT)+' trips with no matching travel event · pipeline 16.0%',uf:1},{l:'Flagged routes',v:fmt(FX.nFlagged),s:fl0[0].replace(' to ',' → ')+' by '+fl0[1].toLowerCase()}])+
   `<div class="card"><div class="ct">Checks</div><div class="cs">Compliance uses the booking clock; the confirmation clock also counts approval time</div>${table([{h:'Check'},{h:'Value',r:1},{h:'Expect',r:1},{h:'Protects',r:1}],[
-    ['Train routes missing from the corridor list','<span class="warn">2</span> <span class="note">Berlin – Madrid (336 train legs, ≈1,870 km); Sydney – Perth (3, flagged)</span>','0','2 Key Carbon KPIs, 3 Policy Impact'],
+    ['Leg + hotel tCO2e = trip tCO2e (LEGS, CASES)',ok(fmt(FX.legsT)+' + '+fmt(FX.hotelT)+' = '+fmt(FX.legsT+FX.hotelT),Math.abs(FX.legsT+FX.hotelT-FX.totT)<0.5),fmt(FX.totT),'Every view'],
+    ['Event tCO2e vs trip tCO2e, largest gap on any trip (kg)',ok(fmt(FX.tripEvDiff,2),FX.tripEvDiff<0.01),'0','4 Process Controls'],
+    ['Leg tCO2e with no trip / trips with no legs',ok(fmt(FX.legsNoTrip)+' / '+fmt(FX.tripsNoLegs),!FX.legsNoTrip&&!FX.tripsNoLegs),'0 / 0','Every view'],
+    ['Legs whose mode attributes disagree with DIM_MODE',ok(fmt(FX.modeMismatch),!FX.modeMismatch),'0','2 Key Carbon KPIs'],
+    ['Train routes missing from the corridor list',`<span class="${FX.missCorr.length?'warn':'ok'}">${FX.missCorr.length}</span> <span class="note">${FX.missCorr.map(m=>`${m[0]} (${fmt(m[1])} train legs, ≈${fmt(m[2])} km)`).join('; ')}</span>`,'0','2 Key Carbon KPIs, 3 Policy Impact'],
     ['Lever identity gap (t)',`<span class="${Math.abs(idGap)<0.5?'ok':'warn'}">${fmt(Math.abs(idGap),1)}</span>`,'0 at any settings','3 Policy Impact'],
-    ['Long-haul flights / trips, great-circle recount',`<span class="ok">${fmt(s.lhlegs)} / ${fmt(lh.trips)}</span>`,filtered()?'scope':'60,390 / 51,873','1, 2, 3'],
-    ['Leg tCO2e with no trip','<span class="ok">0</span>','about 672 in the pipeline','Every view'],
-    ['Median days, confirmation clock, breaches','<span class="ok">0.02</span>','about 0.02','4 Process Controls'],
-    ['Days booked ahead, breaches (booking clock)','<span class="ok">'+PEX.MEDB[0].toFixed(2)+'</span>','record','4 Process Controls']])}</div>
-  <div class="card"><div class="ct">How the carbon figures in this app were built</div><div class="foot2" style="line-height:1.65">Leg tCO2e is distance-based: great-circle km between the booked cities × a BEIS-style factor by haul band and cabin (with radiative forcing and an 8% routing uplift), doubled for the return leg; trains and cars use per-km factors. Totals are calibrated to the Climatiq pipeline: region totals match the pipeline's regional scorecard exactly, the cabin uplift matches 76,976 t, and cabin dollars match $72.5M. Uncalibrated cross-checks land within 1%: premium share of leg emissions ${pct(s.premkg,s.fkg)} (pipeline 53.3%), long-haul trip share ${pct(lh.tot,s.tot)} (90.5%), Sydney → Frankfurt ≈22%. Swap in CASES and LEG_EMISSIONS from the data pool to replace the model.</div></div>`;
+    ['Long-haul flights / trips (distance_km)',ok(fmt(s.lhlegs)+' / '+fmt(lh.trips)),sc||fmt(FX.lhLegsGc)+' / '+fmt(FX.lhTripsGc)+' by DIM_CITY','1, 2, 3'],
+    ['Cabin uplift from legs vs CASES.CabinCapSaving_CO2e (t)',ok(fmt(FX.cabinUplift),Math.abs(FX.cabinUplift-FX.cabinUpliftCases)<0.5),fmt(FX.cabinUpliftCases),'3 Policy Impact'],
+    ['Median days, confirmation clock, breaches',ok(FX.medConfBreach.toFixed(2)),'about 0.02','4 Process Controls'],
+    ['Median days booked ahead, breaches (booking clock)',ok(PEX.MEDB[0].toFixed(2)),'from ACTIVITIES','4 Process Controls']])}</div>
+  <div class="card"><div class="ct">How the carbon figures in this app were built</div><div class="foot2" style="line-height:1.65">Nothing is modelled or calibrated here: every tCO2e figure is read from the data pool tables. Leg tCO2e is LEGS.Leg_CO2e (departure plus return, from the Climatiq pipeline); trip tCO2e is CASES.Total_CO2e, transport plus hotel, ${fmt(FX.totT)} t in all. Event tCO2e is ACTIVITIES.Event_CO2e: departure and return carbon on the travel events, hotel carbon on Book Lodging, the rest held at booking. Policy savings use the pipeline's own per-leg alternatives: Alt_Economy_Leg_CO2e, the same route in economy (${pct(FX.sameRoute,1,0)} of premium legs use the same-route factor, the rest a distance band), and Alt_Rail_Leg_CO2e, the average rail kg per km in the data. Cabin dollars are premium leg cost × (1 − 1 / ${FX.fareMult}), directional. DIM_MODE and DIM_CITY are checked against the legs, and the DIM_CITY great-circle distance stays within ${fmt(FX.airKmMaxDiff)} km of the distance column on every flight. Lead time is booked ahead on the booking clock, first Book Mode of Transportation to first departure, from ACTIVITIES; CASES.LeadTimeDays uses the confirmation clock.</div></div>`;
   view.appendChild(page(html));
 }
 
