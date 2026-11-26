@@ -6,8 +6,6 @@ A standalone web application, styled after the Celonis platform, for decarbonizi
 
 **Run it locally:** open `index.html` in a browser. The page needs no server and no build step: data, charts and map are inlined. Only the Inter font loads from Google Fonts.
 
-> Data is fictional and was provided by Celonis for educational use. Nothing here represents Celonis's actual travel policy or footprint.
-
 ## The story
 
 The app makes one argument: travel carbon is concentrated in a few booking choices that the current process never checks, and four policies enforced at booking can cut about half of it on the path to Net Zero 2030.

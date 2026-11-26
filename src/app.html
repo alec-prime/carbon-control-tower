@@ -180,7 +180,7 @@ svg text{font-family:Inter,system-ui,sans-serif}
     <a href="#policy" data-v="policy" title="3 Policy Impact"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg><span class="tx"><b>Policy Impact</b><small>What would each policy save?</small></span></a>
     <a href="#controls" data-v="controls" title="4 Process Controls"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="6" height="5" rx="1"/><rect x="15" y="3" width="6" height="5" rx="1"/><rect x="9" y="16" width="6" height="5" rx="1"/><path d="M6 8v3h12V8M12 11v5"/></svg><span class="tx"><b>Process Controls</b><small>Do bookings follow policy, and who breaks it?</small></span></a>
     <a href="#trust" data-v="trust" title="5 Data Trust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span class="tx"><b>Data Trust</b><small>Can we believe the numbers?</small></span></a>
-    <div class="foot">Fictional data provided by Celonis for education. Total = transport + hotel CO2e; spend-based CO2e is a cross-check only.</div>
+    <div class="foot">Total = transport + hotel CO2e; spend-based CO2e is a cross-check only.</div>
   </nav>
   <main class="main" id="main">
     <div class="vh"><h1 id="vtitle"></h1><div class="tabs" id="vtabs"></div></div>
@@ -296,7 +296,7 @@ function vOverview(view,tab){
           <div class="note" style="margin-top:8px">Hotels allocated by nights at the arrival city.</div></div>
         <div class="card"><div class="ct">Top 10 of ${ra.length} routes carry about ${topSh.toFixed(0)}% of tCO2e</div>
           <div style="margin-top:8px">${top.map(r=>`<div class="sb" style="grid-template-columns:150px 1fr 48px;padding:4px 0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</span><div class="tr" style="height:10px"><i style="width:${r.t/top[0].t*100}%;background:var(--blue)"></i></div><span class="val">${(r.t/totT*100).toFixed(1)}%</span></div>`).join('')}</div></div></div>
-      <div class="foot2">Fictional data provided by Celonis for education. Total = transport + hotel CO2e; spend-based CO2e is a cross-check only.</div>`);
+      <div class="foot2">Total = transport + hotel CO2e; spend-based CO2e is a cross-check only.</div>`);
     view.appendChild(p);
   } else if(tab===1){ overviewRegion(view); } else {
     const byC={};Object.entries(routeAgg()).forEach(([i,o])=>{const cc=DATA.RT[i][2];const b=byC[cc]||(byC[cc]={t:0,n:0});b.t+=o.t;b.n+=o.n});
@@ -356,7 +356,7 @@ function vKpis(view,tab){
     ${kcard('Long-haul flights',`${fmt(lh.trips)} long-haul trips · ${pct(lh.tot,s.tot)} of tCO2e · ${fmt(s.lhlegs)} legs over 3,700 km`,s.lhlegs/s.flegs*100,s.lhkg/s.fkg*100,'of flight legs','of flight tCO2e')}</div>
     <div class="card"><div class="ct">Every unit shows the same pattern; Sales and Marketing carry it at scale</div>${table([{h:'Business unit'},{h:'Trips',r:1},{h:'Premium % flights',r:1},{h:'Internal % trips',r:1},{h:'Corridor / 100 trips',r:1},{h:'Long haul / 100 trips',r:1}],
       buRows().map(b=>[b.name,fmt(b.trips),pct(b.prem,b.flegs),pct(b.internal,b.trips),(b.corrlegs/b.trips*100).toFixed(1),(b.lhlegs/b.trips*100).toFixed(1)]))}${BUFOOT}</div>
-    <div class="foot2">Carbon figures overlap (most premium legs are also long haul), so never add the four. Counts are legs, each including its return. Fictional data provided by Celonis for education.</div>`;
+    <div class="foot2">Carbon figures overlap (most premium legs are also long haul), so never add the four. Counts are legs, each including its return.</div>`;
   } else if(tab===1){
     html=head('Premium cabins','Answered by the policy <b>Economy instead of premium</b> (3 Policy Impact).')+
     tiles([{l:'Premium flight legs',v:fmt(s.prem),s:pct(s.prem,s.flegs)+' of flights'},{l:'Share of leg emissions',v:pct(s.premkg,s.fkg)},{l:'Uplift over economy',v:fmt(s.upl/1000),s:'tCO2e · '+pct(s.upl,s.tot,0)+' of the footprint',hl:1}])+
@@ -416,7 +416,7 @@ function vPolicy(view){
     <div><label>Internal meetings held virtually (%)</label><input type="number" id="pVirt" min="0" max="100"></div>
     <div><label>Long-haul budget cut per BU (%)</label><input type="number" id="pCut" min="0" max="100"></div>
     <div><label>2030 target cut (%)</label><input type="number" id="pTarget" min="0" max="100"></div></div>
-    <div class="note" style="margin-top:10px">Upper bounds that assume full compliance. Opens at the recommended settings. Fictional data provided by Celonis for education.</div></div><div id="polOut" style="display:grid;gap:12px"></div>`);
+    <div class="note" style="margin-top:10px">Upper bounds that assume full compliance. Opens at the recommended settings.</div></div><div id="polOut" style="display:grid;gap:12px"></div>`);
   view.appendChild(p);
   const bind=(id,k)=>{const e=$(id);e.value=pol[k];e.oninput=()=>{let v=+e.value||0;if(k==='rail')v=Math.min(v,1200);if(['virt','cut','target'].includes(k))v=Math.max(0,Math.min(100,v));pol[k]=Math.max(0,v);calc()}};
   bind('#pEcon','econ');bind('#pExempt','exempt');bind('#pRail','rail');bind('#pVirt','virt');bind('#pCut','cut');bind('#pTarget','target');calc();
